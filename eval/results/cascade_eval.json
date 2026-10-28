@@ -1,0 +1,12 @@
+{
+ "data/student": {
+  "coverage": 0.55,
+  "precision": 0.939,
+  "latency_ms_avg": 3.9
+ },
+ "data/student_linear": {
+  "coverage": 0.5,
+  "precision": 0.967,
+  "latency_ms_avg": 3.6
+ }
+}

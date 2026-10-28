@@ -1,0 +1,10 @@
+# Версии с верхней границей. Python 3.10–3.12: ВМ хакатона — 3.10, CI и Docker — 3.12. На 3.13+ модуль audioop
+# убран из стандартной библиотеки — его заменяет audioop-lts (ставится сам)
+pydantic>=2.7,<3
+openai>=1.40,<4
+python-dotenv>=1.0,<2
+fastapi>=0.115,<1
+uvicorn>=0.30,<1
+httpx>=0.27,<1
+audioop-lts>=0.2,<1; python_version >= "3.13"
+piper-tts>=1.2,<2  # резервный локальный синтез речи (голос — tools/get_voice.sh)

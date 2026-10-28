@@ -1,0 +1,10 @@
+# Локальные модели на CPU: модель-ученик (rubert-tiny2), распознавание GigaAM, синтез Silero.
+# Версии — как на ВМ хакатона (CPU-сборка torch: pip install --index-url https://download.pytorch.org/whl/cpu)
+torch>=2.4,<3
+torchaudio>=2.4,<3
+transformers>=4.40,<6
+scikit-learn>=1.3,<2
+# нейросетевой детектор речи для телефонии (Silero, MIT); модель внутри пакета, без загрузки
+silero-vad==5.1.2
+# распознавание речи GigaAM (Сбер, MIT), зафиксировано на проверенном коммите
+gigaam @ git+https://github.com/salute-developers/GigaAM.git@7447938d791c4f3e643386ee22c33777004293a5

@@ -1,0 +1,138 @@
+{
+ "calls": {
+  "days": 92,
+  "calls": 17772,
+  "calls_per_day": 193,
+  "calls_peak_day": 359,
+  "results": {
+   "пропущен": 3687,
+   "перевод": 1541,
+   "справка": 4898,
+   "записан": 7646
+  },
+  "missed_share": 0.207,
+  "missed_off_hours": 712,
+  "wait_avg_sec": 18.0,
+  "wait_missed_avg_sec": 37.7,
+  "typical_share_of_answered": 0.891,
+  "typical_minutes_per_day": 300,
+  "by_hour": [
+   {
+    "hour": 7,
+    "calls": 357,
+    "missed": 1.0,
+    "wait": 11
+   },
+   {
+    "hour": 8,
+    "calls": 1909,
+    "missed": 0.212,
+    "wait": 21
+   },
+   {
+    "hour": 9,
+    "calls": 2414,
+    "missed": 0.228,
+    "wait": 40
+   },
+   {
+    "hour": 10,
+    "calls": 2073,
+    "missed": 0.216,
+    "wait": 40
+   },
+   {
+    "hour": 11,
+    "calls": 1720,
+    "missed": 0.114,
+    "wait": 16
+   },
+   {
+    "hour": 12,
+    "calls": 1394,
+    "missed": 0.121,
+    "wait": 16
+   },
+   {
+    "hour": 13,
+    "calls": 1138,
+    "missed": 0.12,
+    "wait": 16
+   },
+   {
+    "hour": 14,
+    "calls": 1366,
+    "missed": 0.121,
+    "wait": 15
+   },
+   {
+    "hour": 15,
+    "calls": 1272,
+    "missed": 0.172,
+    "wait": 15
+   },
+   {
+    "hour": 16,
+    "calls": 1242,
+    "missed": 0.193,
+    "wait": 15
+   },
+   {
+    "hour": 17,
+    "calls": 1110,
+    "missed": 0.18,
+    "wait": 15
+   },
+   {
+    "hour": 18,
+    "calls": 840,
+    "missed": 0.181,
+    "wait": 15
+   },
+   {
+    "hour": 19,
+    "calls": 582,
+    "missed": 0.163,
+    "wait": 14
+   },
+   {
+    "hour": 20,
+    "calls": 245,
+    "missed": 1.0,
+    "wait": 11
+   },
+   {
+    "hour": 21,
+    "calls": 110,
+    "missed": 1.0,
+    "wait": 11
+   }
+  ]
+ },
+ "noshow": {
+  "appointments": 35470,
+  "status": {
+   "Неявка": 4079,
+   "Состоялся": 27080,
+   "Отменён": 4311
+  },
+  "noshow_share": 0.115,
+  "noshow_per_day": 26.5,
+  "loss_per_month_rub": 953532
+ },
+ "assistant_success": null,
+ "after": {
+  "missed_share": 0.0,
+  "wait_sec": 1,
+  "automated_share_of_calls": 0.713,
+  "operator_minutes_freed_per_day": 240,
+  "noshow_share": 0.081,
+  "saved_per_month_rub": 286060
+ },
+ "assumptions": [
+  "Ассистент отвечает на каждый звонок сразу и круглосуточно; пропущенный звонок — только при сбое связи.",
+  "Типовые звонки (записан, справка) автоматизируются с долей успеха ниже результата стенда «LLM-пациент» (22 из 23 = 96%), консервативно (80%).",
+  "Напоминания снижают неявки на 30% — нижняя граница из условия кейса.",
+  "Стоимость приёма по ОМС — 1200 ₽ (условие кейса)."
+ ]
+}

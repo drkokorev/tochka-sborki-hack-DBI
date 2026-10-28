@@ -1,0 +1,9 @@
+[project]
+name = "tochka-sborki-dbi"
+version = "0.1.0"
+description = "Голосовой ассистент регистратуры поликлиники: запись, перенос, напоминания и перевод на человека"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

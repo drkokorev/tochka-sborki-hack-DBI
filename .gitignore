@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+.DS_Store
+.idea/
+logs/*
+!logs/.gitkeep
+data/
+voices/
+eval/report_partial.*

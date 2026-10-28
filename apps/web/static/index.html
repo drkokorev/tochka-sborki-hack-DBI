@@ -1,0 +1,1294 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Регистратура · голосовой помощник</title>
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<style>
+  /* Интерфейс по Apple Human Interface Guidelines: сгруппированные списки, системные цвета и шрифт,
+     боковая панель iPadOS на широком экране и панель вкладок iOS на телефоне. Тёмная тема — чистый чёрный. */
+  :root {
+    --bg: #f2f2f7; --cell: #ffffff; --cell-2: #f2f2f7; --elevated: #ffffff;
+    --label: #000000; --label-2: rgba(60,60,67,.6); --label-3: rgba(60,60,67,.3); --label-4: rgba(60,60,67,.18);
+    --sep: rgba(60,60,67,.29); --fill: rgba(120,120,128,.2); --fill-2: rgba(120,120,128,.16);
+    --fill-3: rgba(118,118,128,.12); --fill-4: rgba(116,116,128,.08);
+    --blue: #007aff; --green: #34c759; --orange: #ff9500; --red: #ff3b30; --pink: #ff2d55; --purple: #af52de;
+    --indigo: #5856d6; --teal: #30b0c7; --mint: #00c7be; --yellow: #ffcc00; --gray: #8e8e93;
+    --bubble-in: #e9e9eb; --material: rgba(249,249,249,.8); --thumb: #ffffff;
+    --thumb-shadow: 0 3px 8px rgba(0,0,0,.12), 0 3px 1px rgba(0,0,0,.04);
+    --float-shadow: 0 0 0 .5px rgba(0,0,0,.04), 0 10px 40px rgba(0,0,0,.08);
+    --avatar: linear-gradient(180deg, #a5abb8, #858994);
+    --ease: cubic-bezier(.32,.72,0,1);
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #000000; --cell: #1c1c1e; --cell-2: #2c2c2e; --elevated: #1c1c1e;
+      --label: #ffffff; --label-2: rgba(235,235,245,.6); --label-3: rgba(235,235,245,.3); --label-4: rgba(235,235,245,.16);
+      --sep: rgba(84,84,88,.6); --fill: rgba(120,120,128,.36); --fill-2: rgba(120,120,128,.32);
+      --fill-3: rgba(118,118,128,.24); --fill-4: rgba(118,118,128,.18);
+      --blue: #0a84ff; --green: #30d158; --orange: #ff9f0a; --red: #ff453a; --pink: #ff375f; --purple: #bf5af2;
+      --indigo: #5e5ce6; --teal: #40c8e0; --mint: #63e6e2; --yellow: #ffd60a; --gray: #98989d;
+      --bubble-in: #26252a; --material: rgba(30,30,30,.72); --thumb: #636366; --thumb-shadow: none;
+      --float-shadow: 0 0 0 .5px rgba(255,255,255,.06);
+      --avatar: linear-gradient(180deg, #6c6c70, #48484a);
+    }
+  }
+  :root[data-theme="dark"] {
+      --bg: #000000; --cell: #1c1c1e; --cell-2: #2c2c2e; --elevated: #1c1c1e;
+      --label: #ffffff; --label-2: rgba(235,235,245,.6); --label-3: rgba(235,235,245,.3); --label-4: rgba(235,235,245,.16);
+      --sep: rgba(84,84,88,.6); --fill: rgba(120,120,128,.36); --fill-2: rgba(120,120,128,.32);
+      --fill-3: rgba(118,118,128,.24); --fill-4: rgba(118,118,128,.18);
+      --blue: #0a84ff; --green: #30d158; --orange: #ff9f0a; --red: #ff453a; --pink: #ff375f; --purple: #bf5af2;
+      --indigo: #5e5ce6; --teal: #40c8e0; --mint: #63e6e2; --yellow: #ffd60a; --gray: #98989d;
+      --bubble-in: #26252a; --material: rgba(30,30,30,.72); --thumb: #636366; --thumb-shadow: none;
+      --float-shadow: 0 0 0 .5px rgba(255,255,255,.06);
+      --avatar: linear-gradient(180deg, #6c6c70, #48484a);
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] { color-scheme: light; }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  html, body { margin: 0; background: var(--bg); color: var(--label); }
+  body { font: 15px/20px -apple-system, BlinkMacSystemFont, system-ui, "Helvetica Neue", sans-serif;
+         letter-spacing: -.016em; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  button, input { font: inherit; color: inherit; letter-spacing: inherit; }
+  button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  svg { display: block; }
+  .num { font-variant-numeric: tabular-nums; }
+  .rounded { font-family: ui-rounded, "SF Pro Rounded", -apple-system, system-ui, sans-serif; }
+  .secondary { color: var(--label-2); } .tertiary { color: var(--label-3); }
+  .i { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+  /* ---------- кнопки ---------- */
+  .btn { border: 0; border-radius: 999px; padding: 7px 14px; font-size: 15px; font-weight: 590; line-height: 20px;
+         background: var(--fill-3); color: var(--blue); display: inline-flex; align-items: center; gap: 6px;
+         transition: opacity .15s, transform .2s var(--ease); white-space: nowrap; }
+  .btn:active { opacity: .7; transform: scale(.97); }
+  .btn.filled { background: var(--blue); color: #fff; }
+  .btn.tinted { background: color-mix(in srgb, var(--blue) 15%, transparent); }
+  .btn.plain { background: transparent; padding: 7px 4px; font-weight: 400; font-size: 17px; }
+  .btn.small { padding: 5px 12px; font-size: 14px; }
+  .btn .i { width: 17px; height: 17px; }
+
+  /* ---------- каркас: плавающая боковая панель (iPadOS) ---------- */
+  .app { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: 100vh; }
+  .sidebar { position: sticky; top: 0; height: 100vh; padding: 12px 0 12px 12px; }
+  .sidebar-in { height: 100%; background: var(--elevated); border-radius: 24px; box-shadow: var(--float-shadow);
+                display: flex; flex-direction: column; padding: 18px 10px 10px; }
+  .sb-title { padding: 6px 12px 16px; }
+  .sb-title h1 { margin: 0; font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: .012em; }
+  .sb-title p { margin: 2px 0 0; color: var(--label-2); font-size: 15px; }
+  .nav { display: flex; flex-direction: column; gap: 2px; }
+  .tab { border: 0; background: transparent; border-radius: 12px; padding: 0 12px; height: 44px; display: flex; align-items: center;
+         gap: 12px; font-size: 17px; line-height: 22px; letter-spacing: -.026em; text-align: left; color: var(--label);
+         transition: background .2s var(--ease); }
+  .tab .i { width: 24px; height: 24px; color: var(--blue); }
+  @media (hover: hover) { .tab:hover { background: var(--fill-4); } }
+  .tab[aria-selected="true"] { background: var(--fill-3); font-weight: 600; }
+  .tab .label { flex: 1; }
+  .count { min-width: 22px; height: 22px; padding: 0 7px; border-radius: 11px; background: var(--red); color: #fff;
+           font-size: 13px; font-weight: 600; display: inline-grid; place-items: center; letter-spacing: 0; }
+  .count[hidden] { display: none; }
+  .sb-foot { margin-top: auto; position: relative; display: grid; gap: 8px; }
+  .segmented.theme { display: flex; margin: 0 4px; } .segmented.theme button { flex: 1; padding: 0 6px; }
+  .m-status { display: none; }
+  .status-btn { width: 100%; border: 0; background: transparent; border-radius: 12px; padding: 10px 12px; display: flex;
+                align-items: center; gap: 10px; text-align: left; font-size: 15px; color: var(--label-2); }
+  .status-btn:hover { background: var(--fill-4); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex: none;
+         box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 22%, transparent); }
+  .pop { position: absolute; left: 4px; bottom: calc(100% + 8px); width: 320px; z-index: 30; display: none;
+         background: var(--material); backdrop-filter: blur(30px) saturate(1.8); -webkit-backdrop-filter: blur(30px) saturate(1.8);
+         border-radius: 16px; box-shadow: 0 0 0 .5px var(--sep), 0 20px 50px rgba(0,0,0,.2); overflow: hidden; }
+  .pop.open { display: block; animation: pop .25s var(--ease); }
+  .pop .pop-h { padding: 14px 16px 6px; font-size: 13px; color: var(--label-2); }
+  .pop .actions { padding: 8px 16px 14px; }
+  @keyframes pop { from { opacity: 0; transform: scale(.96) translateY(6px); } }
+
+  main { padding: 28px 40px 80px; max-width: 1240px; width: 100%; }
+  .view { display: none; } .view.active { display: block; animation: fade .3s ease-out; }
+  @keyframes fade { from { opacity: 0; } }
+  .large-title { display: flex; align-items: flex-end; gap: 12px; margin: 0 0 22px; padding: 0 4px; }
+  .large-title h2 { margin: 0; font-size: 34px; line-height: 41px; font-weight: 700; letter-spacing: .012em; }
+  .large-title p { margin: 0 0 0; color: var(--label-2); font-size: 15px; }
+  .large-title .right { margin-left: auto; display: flex; gap: 8px; }
+  .eyebrow { font-size: 13px; line-height: 18px; color: var(--label-2); text-transform: uppercase; letter-spacing: -.006em; font-weight: 600; }
+
+  /* ---------- сгруппированные списки ---------- */
+  .group { background: var(--cell); border-radius: 12px; overflow: hidden; }
+  .section { margin-top: 32px; }
+  .section:first-child, .desk > .section { margin-top: 0; }
+  .section-h { display: flex; align-items: baseline; gap: 10px; margin: 0 4px 10px; }
+  .section-h h3 { margin: 0; font-size: 22px; line-height: 28px; font-weight: 700; letter-spacing: -.012em; }
+  .section-h .sub { color: var(--label-2); font-size: 15px; }
+  .section-h .right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+  .section-foot { margin: 8px 16px 0; font-size: 13px; line-height: 18px; color: var(--label-2); }
+  .row { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 11px 16px; position: relative; font-size: 17px;
+         line-height: 22px; letter-spacing: -.026em; }
+  .row + .row::before { content: ""; position: absolute; top: 0; right: 0; left: 16px; border-top: .5px solid var(--sep); }
+  .row.icon + .row.icon::before { left: 59px; }
+  .row .grow { flex: 1; min-width: 0; }
+  .row .val { color: var(--label-2); text-align: right; }
+  .row .title { display: block; }
+  .row .subtitle { display: block; font-size: 15px; line-height: 20px; color: var(--label-2); letter-spacing: -.016em; margin-top: 1px; }
+  .row.click { cursor: pointer; transition: background .15s; }
+  .row.click:hover { background: var(--fill-4); } .row.click:active { background: var(--fill-3); }
+  .chev { width: 8px; height: 13px; color: var(--label-3); flex: none; stroke-width: 2.4; }
+  .sq { width: 30px; height: 30px; border-radius: 7px; display: grid; place-items: center; color: #fff; flex: none; }
+  .sq .i { width: 18px; height: 18px; stroke-width: 2; }
+  .empty { padding: 28px 16px; text-align: center; color: var(--label-2); font-size: 15px; }
+  .kv { display: block; }
+  .kv .row { font-size: 15px; line-height: 20px; min-height: 40px; padding: 10px 16px; letter-spacing: -.016em; }
+
+  /* ---------- сегменты, поиск, переключатели ---------- */
+  .segmented { display: inline-flex; background: var(--fill-3); padding: 2px; border-radius: 9px; height: 32px; position: relative; }
+  .segmented button { border: 0; background: transparent; border-radius: 7px; padding: 0 14px; font-size: 13px; font-weight: 500;
+                      letter-spacing: -.006em; color: var(--label); position: relative; transition: background .25s var(--ease); }
+  .segmented button + button::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; border-left: .5px solid var(--label-4); }
+  .segmented button[aria-pressed="true"] { background: var(--thumb); box-shadow: var(--thumb-shadow); font-weight: 600; }
+  .segmented button[aria-pressed="true"]::before, .segmented button[aria-pressed="true"] + button::before { display: none; }
+  .search { display: flex; align-items: center; gap: 6px; background: var(--fill-3); border-radius: 10px; height: 36px; padding: 0 10px;
+            color: var(--label-2); width: 260px; }
+  .search .i { width: 17px; height: 17px; }
+  .search input { border: 0; background: transparent; outline: none; flex: 1; min-width: 0; font-size: 17px; color: var(--label); letter-spacing: -.026em; }
+  .search input::placeholder { color: var(--label-2); }
+  .toggle { appearance: none; width: 51px; height: 31px; border-radius: 16px; background: var(--fill-2); position: relative; margin: 0;
+            cursor: pointer; transition: background .25s var(--ease); flex: none; }
+  .toggle::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 50%; background: #fff;
+                   box-shadow: 0 3px 8px rgba(0,0,0,.15), 0 3px 1px rgba(0,0,0,.06); transition: transform .3s var(--ease); }
+  .toggle:checked { background: var(--green); } .toggle:checked::after { transform: translateX(20px); }
+
+  /* ---------- звонок: экран «Телефона» + «Сообщения» ---------- */
+  .call-grid { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 24px; align-items: start; }
+  .phone { background: var(--cell); border-radius: 22px; padding: 30px 22px 24px; text-align: center; }
+  .avatar { width: 96px; height: 96px; border-radius: 50%; background: var(--avatar); margin: 0 auto; display: grid; place-items: center;
+            color: #fff; position: relative; }
+  .avatar .i { width: 46px; height: 46px; stroke-width: 1.6; }
+  .avatar::after { content: ""; position: absolute; inset: -7px; border-radius: 50%; border: 2.5px solid transparent; transition: border-color .3s; }
+  .avatar[data-s="listening"]::after { border-color: var(--green); animation: pulse 1.4s ease-out infinite; }
+  .avatar[data-s="speaking"]::after { border-color: var(--blue); animation: pulse 1.8s ease-out infinite; }
+  .avatar[data-s="thinking"]::after { border-color: var(--label-3); border-top-color: var(--blue); animation: spin 1s linear infinite; }
+  @keyframes pulse { 0% { transform: scale(.96); opacity: 1; } 100% { transform: scale(1.18); opacity: 0; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .phone h3 { margin: 16px 0 2px; font-size: 28px; line-height: 34px; font-weight: 400; letter-spacing: .014em; }
+  .phone .who-sub { color: var(--label-2); font-size: 15px; }
+  .call-state { margin-top: 8px; font-size: 17px; color: var(--label-2); letter-spacing: -.026em; min-height: 22px; display: flex;
+                justify-content: center; gap: 8px; }
+  .call-state[data-s="listening"] #stateTxt { color: var(--green); }
+  .controls { display: grid; grid-template-columns: repeat(3, 72px); justify-content: center; gap: 18px 22px; margin: 26px 0 6px; }
+  .ctl { display: flex; flex-direction: column; align-items: center; gap: 7px; font-size: 12px; color: var(--label); letter-spacing: 0;
+         cursor: pointer; user-select: none; }
+  .ctl .circle { width: 64px; height: 64px; border-radius: 50%; background: var(--fill-3); display: grid; place-items: center;
+                 transition: background .25s var(--ease), color .25s var(--ease), transform .2s var(--ease); border: 0; color: var(--label); }
+  .ctl .circle .i { width: 26px; height: 26px; }
+  .ctl:active .circle { transform: scale(.94); }
+  .ctl input { position: absolute; opacity: 0; pointer-events: none; }
+  .ctl input:checked + .circle { background: var(--label); color: var(--cell); }
+  .ctl .circle[data-s="listening"] { background: var(--green); color: #fff; }
+  .ctl.go .circle { background: var(--green); color: #fff; }
+  .ctl.go[data-on="1"] .circle { background: var(--red); }
+  .ctl.go[data-on="1"] .circle .i { transform: rotate(135deg); }
+  .ctl.go .circle .i { transition: transform .35s var(--ease); fill: currentColor; stroke: none; }
+  .ctl .circle:disabled { opacity: .4; }
+  .lvl { height: 22px; display: flex; gap: 3px; align-items: center; justify-content: center; margin-top: 6px; }
+  .lvl i { width: 3px; border-radius: 2px; background: var(--green); height: calc(4px + var(--lvl, 0) * 18px); transition: height .08s; opacity: .9; }
+  .lvl i:nth-child(2), .lvl i:nth-child(4) { height: calc(4px + var(--lvl, 0) * 12px); }
+  .lvl i:nth-child(1), .lvl i:nth-child(5) { height: calc(4px + var(--lvl, 0) * 7px); }
+  .lvl[hidden] { display: none; }
+
+  .side { display: flex; flex-direction: column; gap: 0; }
+  .meter { display: grid; grid-template-columns: 1fr auto; row-gap: 6px; flex: 1; }
+  .meter .bar { grid-column: 1 / -1; height: 4px; border-radius: 2px; background: var(--fill-3); overflow: hidden; }
+  .meter .bar i { display: block; height: 100%; border-radius: 2px; width: 0; transition: width .5s var(--ease); }
+  #bStt { background: var(--teal); } #bNlu { background: var(--indigo); } #bTts { background: var(--pink); }
+
+  .chat { background: var(--cell); border-radius: 22px; display: flex; flex-direction: column; height: calc(100vh - 140px); min-height: 560px; overflow: hidden; }
+  .chat-h { display: flex; align-items: center; justify-content: center; padding: 12px 16px; position: relative; border-bottom: .5px solid var(--sep); }
+  .chat-h b { font-size: 17px; font-weight: 600; letter-spacing: -.026em; }
+  .chat-h .timer { position: absolute; left: 18px; color: var(--label-2); font-size: 15px; }
+  .chat-h .btn { position: absolute; right: 8px; }
+  .log { flex: 1; overflow-y: auto; padding: 16px 16px 8px; display: flex; flex-direction: column; gap: 2px; scroll-behavior: smooth; }
+  .msg { max-width: min(72%, 560px); display: flex; flex-direction: column; margin-top: 8px; }
+  .msg .bubble { padding: 7px 13px 8px; border-radius: 19px; white-space: pre-wrap; font-size: 17px; line-height: 22px;
+                 letter-spacing: -.026em; position: relative; animation: bub .35s var(--ease); }
+  @keyframes bub { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+  .msg.bot { align-self: flex-start; }
+  .msg.bot .bubble { background: var(--bubble-in); }
+  .msg.user { align-self: flex-end; align-items: flex-end; }
+  .msg.user .bubble { background: var(--blue); color: #fff; }
+  /* хвостики как в «Сообщениях» */
+  .msg .bubble::before, .msg .bubble::after { content: ""; position: absolute; bottom: 0; height: 20px; }
+  .msg.bot .bubble::before { left: -7px; width: 20px; background: var(--bubble-in); border-bottom-right-radius: 16px 14px; }
+  .msg.bot .bubble::after { left: -26px; width: 26px; background: var(--cell); border-bottom-right-radius: 10px; }
+  .msg.user .bubble::before { right: -7px; width: 20px; background: var(--blue); border-bottom-left-radius: 16px 14px; }
+  .msg.user .bubble::after { right: -26px; width: 26px; background: var(--cell); border-bottom-left-radius: 10px; }
+  .meta { font-size: 12px; line-height: 16px; color: var(--label-2); margin: 4px 6px 0; letter-spacing: 0; }
+  .msg.user .meta { text-align: right; }
+  .result { display: inline-flex; gap: 6px; align-items: center; margin: 8px 2px 0; font-size: 13px; font-weight: 600; letter-spacing: -.006em;
+            padding: 5px 11px; border-radius: 999px; background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); }
+  .result.esc { background: color-mix(in srgb, var(--orange) 15%, transparent); color: var(--orange); }
+  .result .i { width: 15px; height: 15px; stroke-width: 2.4; }
+  .hero { margin: auto; text-align: center; padding: 24px 12px; max-width: 460px; }
+  .hero h4 { margin: 0 0 6px; font-size: 22px; line-height: 28px; font-weight: 700; letter-spacing: -.012em; }
+  .hero p { margin: 0; color: var(--label-2); font-size: 15px; }
+  .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 18px; }
+  .chip { border: 0; border-radius: 999px; padding: 7px 14px; font-size: 15px; background: color-mix(in srgb, var(--blue) 12%, transparent);
+          color: var(--blue); letter-spacing: -.016em; transition: transform .2s var(--ease); }
+  .chip:active { transform: scale(.96); }
+  .notice { margin: 0 16px 6px; font-size: 13px; color: var(--orange); display: none; text-align: center; }
+  .composer { display: flex; align-items: center; gap: 8px; padding: 8px 12px 12px; }
+  .round { width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--fill-3); display: grid; place-items: center; color: var(--label-2); flex: none;
+           transition: background .2s, color .2s; }
+  .round .i { width: 20px; height: 20px; }
+  .round[data-s="listening"] { background: var(--green); color: #fff; }
+  .field { flex: 1; min-width: 0; display: flex; align-items: center; border: .5px solid var(--sep); border-radius: 20px; padding: 3px 3px 3px 14px; min-height: 38px; }
+  .field input { flex: 1; min-width: 0; border: 0; background: transparent; outline: none; font-size: 17px; letter-spacing: -.026em; color: var(--label); }
+  .field input::placeholder { color: var(--label-3); }
+  .send { width: 30px; height: 30px; border-radius: 50%; border: 0; background: var(--blue); color: #fff; display: grid; place-items: center; flex: none;
+          transition: transform .2s var(--ease), opacity .2s; }
+  .send .i { width: 17px; height: 17px; stroke-width: 2.6; }
+  .field:has(input:placeholder-shown) .send { opacity: 0; transform: scale(.6); pointer-events: none; }
+
+  /* ---------- регистратура ---------- */
+  .desk { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .tcard { background: var(--cell); border-radius: 12px; padding: 14px 16px 14px; margin-bottom: 12px; transition: opacity .3s; }
+  .tcard.taken { opacity: .45; }
+  .tcard .top { display: flex; align-items: center; gap: 10px; }
+  .tcard h4 { margin: 0; font-size: 17px; line-height: 22px; font-weight: 600; letter-spacing: -.026em; }
+  .tcard .when { margin-left: auto; color: var(--label-2); font-size: 15px; white-space: nowrap; }
+  .tcard .summary { margin: 6px 0 0; font-size: 17px; line-height: 22px; letter-spacing: -.026em; }
+  .prio { font-size: 12px; font-weight: 700; letter-spacing: 0; padding: 2px 8px; border-radius: 999px; background: var(--fill-3); color: var(--label-2); }
+  .prio.P1 { background: var(--red); color: #fff; } .prio.P2 { background: var(--orange); color: #fff; }
+  .done-list { margin: 10px 0 0; padding: 0; list-style: none; font-size: 15px; line-height: 20px; color: var(--label-2); display: grid; gap: 4px; }
+  .done-list li { display: flex; gap: 8px; align-items: flex-start; }
+  .badge { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--fill-3); color: var(--label-2); white-space: nowrap; }
+  pre.json { margin: 8px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--fill-3); color: var(--label-2); font-size: 12px; line-height: 16px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+  .done-list .i { width: 16px; height: 16px; color: var(--green); stroke-width: 2.6; margin-top: 2px; }
+  .tcard .foot { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+  details.dialog { margin-top: 10px; border-top: .5px solid var(--sep); padding-top: 8px; }
+  details.dialog summary { cursor: pointer; color: var(--blue); font-size: 15px; list-style: none; display: flex; align-items: center; gap: 6px; }
+  details.dialog summary::-webkit-details-marker { display: none; }
+  details.dialog summary .chev { color: var(--blue); transition: transform .25s var(--ease); }
+  details.dialog[open] summary .chev { transform: rotate(90deg); }
+  details.dialog p { margin: 6px 0 0; font-size: 15px; line-height: 20px; }
+  .risk { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; }
+  .risk.high { color: var(--red); } .risk.mid { color: var(--orange); } .risk.low { color: var(--label-2); font-weight: 400; }
+  .toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 0 12px; }
+  .toolbar .right { margin-left: auto; display: flex; gap: 8px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 13px; line-height: 18px; color: var(--label-2); font-weight: 400; padding: 10px 16px 6px; letter-spacing: -.006em; }
+  td { padding: 11px 16px; font-size: 15px; line-height: 20px; vertical-align: top; position: relative; }
+  tbody tr td { box-shadow: inset 0 .5px 0 var(--sep); }
+  tbody tr td:first-child { box-shadow: none; }
+  tbody tr td:first-child::before { content: ""; position: absolute; left: 16px; right: 0; top: 0; border-top: .5px solid var(--sep); }
+  td small { display: block; color: var(--label-2); font-size: 13px; line-height: 18px; margin-top: 1px; }
+  td.nowrap { white-space: nowrap; }
+  .pill { font-size: 13px; padding: 2px 9px; border-radius: 999px; white-space: nowrap; font-weight: 500; letter-spacing: -.006em;
+          background: var(--fill-3); color: var(--label-2); }
+  .pill.planned { background: color-mix(in srgb, var(--blue) 14%, transparent); color: var(--blue); }
+  .pill.done { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); }
+  #journal { overflow: auto; max-height: 620px; }
+  #journal thead th { position: sticky; top: 0; background: var(--cell); z-index: 1; }
+
+  /* ---------- аналитика: плитки «Здоровья» ---------- */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+  .tile { background: var(--cell); border-radius: 12px; padding: 12px 16px 14px; display: flex; flex-direction: column; min-height: 132px; }
+  .tile-h { display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; letter-spacing: -.016em; color: var(--tint); }
+  .tile-h .i { width: 18px; height: 18px; stroke-width: 2.2; }
+  .tile-h .when { margin-left: auto; color: var(--label-2); font-weight: 400; display: flex; align-items: center; gap: 6px; }
+  .tile .value { margin-top: auto; padding-top: 14px; display: flex; align-items: baseline; gap: 4px; }
+  .tile .value b { font-size: 34px; line-height: 40px; font-weight: 600; letter-spacing: .01em; }
+  .tile .value span { font-size: 17px; font-weight: 600; color: var(--label-2); }
+  .tile .cap { font-size: 13px; line-height: 18px; color: var(--label-2); margin-top: 2px; }
+  .tile .track { height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--tint) 20%, transparent); margin-top: 10px; overflow: hidden; }
+  .tile .track i { display: block; height: 100%; border-radius: 3px; background: var(--tint); transition: width .6s var(--ease); }
+  .compare { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .cmp { background: var(--cell); border-radius: 12px; padding: 12px 16px 16px; }
+  .cmp p { margin: 10px 0 14px; font-size: 17px; line-height: 22px; letter-spacing: -.026em; font-weight: 600; }
+  .cmp .bars { display: grid; gap: 10px; }
+  .cmp .b { display: grid; grid-template-columns: 1fr; gap: 4px; }
+  .cmp .b .lab { display: flex; align-items: baseline; gap: 6px; }
+  .cmp .b .lab b { font-size: 22px; line-height: 26px; font-weight: 600; }
+  .cmp .b .lab span { font-size: 13px; color: var(--label-2); }
+  .cmp .b .bar { height: 26px; border-radius: 6px; background: var(--fill-4); overflow: hidden; }
+  .cmp .b .bar i { display: block; height: 100%; border-radius: 6px; min-width: 6px; }
+  .cmp .b.was .bar i { background: var(--gray); opacity: .55; }
+  .cmp .b.now .bar i { background: var(--tint); }
+  .chart-card { background: var(--cell); border-radius: 12px; padding: 12px 16px 14px; }
+  .chart { position: relative; height: 170px; margin-top: 14px; display: grid; grid-template-columns: repeat(15, 1fr); gap: 7px; align-items: end;
+           border-bottom: .5px solid var(--sep);
+           background: repeating-linear-gradient(to top, transparent 0 calc(25% - .5px), var(--label-4) calc(25% - .5px) 25%); }
+  .col { background: color-mix(in srgb, var(--gray) 35%, transparent); border-radius: 4px 4px 0 0; position: relative; transition: height .6s var(--ease); }
+  .col i { position: absolute; left: 0; right: 0; bottom: 0; background: var(--red); border-radius: 4px 4px 0 0; }
+  .xaxis { display: grid; grid-template-columns: repeat(15, 1fr); gap: 7px; font-size: 11px; color: var(--label-2); text-align: center; margin-top: 6px; letter-spacing: 0; }
+  .legend { display: flex; gap: 16px; font-size: 13px; color: var(--label-2); margin-top: 10px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend span::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: color-mix(in srgb, var(--gray) 35%, transparent); }
+  .legend .l1::before { background: var(--red); }
+  .stackbar { display: flex; height: 26px; border-radius: 6px; overflow: hidden; background: var(--fill-4); gap: 2px; margin-top: 14px; }
+  .stackbar i { display: block; height: 100%; }
+  .s-phrase { background: var(--teal); } .s-student { background: var(--green); } .s-llm { background: var(--indigo); } .s-rules { background: var(--gray); }
+  .mix .row { padding: 8px 0; min-height: 36px; font-size: 15px; letter-spacing: -.016em; }
+  .mix .row + .row::before { left: 20px; }
+  .mix .sw { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .hbars { display: grid; gap: 12px; margin-top: 12px; }
+  .hbar { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font-size: 15px; letter-spacing: -.016em; }
+  .hbar .bar { grid-column: 1 / -1; height: 8px; border-radius: 4px; background: var(--fill-4); overflow: hidden; }
+  .hbar .bar i { display: block; height: 100%; background: var(--tint, var(--blue)); border-radius: 4px; transition: width .6s var(--ease); }
+  .hbar .v { color: var(--label-2); }
+  .grid-2 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+
+  /* ---------- лист с расшифровкой (как inspector в iPadOS) ---------- */
+  .sheet-bg { position: fixed; inset: 0; background: rgba(0,0,0,.3); opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 40; }
+  .sheet-bg.open { opacity: 1; pointer-events: auto; }
+  .sheet { position: fixed; top: 12px; right: 12px; bottom: 12px; width: min(460px, calc(100% - 24px)); background: var(--bg); z-index: 41;
+           border-radius: 24px; box-shadow: 0 30px 80px rgba(0,0,0,.3); transform: translateX(calc(100% + 24px));
+           transition: transform .5s var(--ease); display: flex; flex-direction: column; overflow: hidden; }
+  .sheet.open { transform: none; }
+  .sheet-h { display: flex; align-items: center; justify-content: center; padding: 14px 16px; position: relative; }
+  .sheet-h b { font-size: 17px; font-weight: 600; letter-spacing: -.026em; }
+  .sheet-h .btn { position: absolute; right: 10px; font-weight: 600; }
+  .sheet .log { background: var(--cell); margin: 0 12px 12px; border-radius: 16px; }
+  .sheet .msg.bot .bubble::after, .sheet .msg.user .bubble::after { background: var(--cell); }
+
+  /* ---------- узкий экран: панель вкладок iOS ---------- */
+  .tabbar { display: none; }
+  @media (max-width: 1180px) {
+    .call-grid { grid-template-columns: 300px minmax(0, 1fr); }
+    .desk, .grid-2 { grid-template-columns: minmax(0, 1fr); }
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 900px) {
+    .app { grid-template-columns: minmax(0, 1fr); }
+    .sidebar { display: none; }
+    main { padding: 12px 16px calc(100px + env(safe-area-inset-bottom)); }
+    .large-title { margin: 8px 0 16px; flex-wrap: wrap; }
+    .call-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .call-grid .side { display: contents; }
+    .phone { order: 1; padding: 18px 16px 16px; }
+    .chat { order: 2; }
+    .call-grid .section { order: 3; margin-top: 8px; }
+    .avatar { width: 64px; height: 64px; } .avatar .i { width: 32px; height: 32px; }
+    .phone h3 { margin-top: 10px; font-size: 22px; line-height: 28px; }
+    .controls { margin-top: 16px; }
+    .section-h { flex-wrap: wrap; row-gap: 2px; }
+    .chat { height: auto; min-height: 420px; max-height: none; }
+    .log { min-height: 300px; }
+    .tiles, .compare, .grid-3 { grid-template-columns: minmax(0, 1fr); }
+    .msg { max-width: 84%; }
+    .search { width: 100%; } .toolbar .right { margin-left: 0; }
+    .m-status { display: grid; place-items: center; position: fixed; top: calc(12px + env(safe-area-inset-top)); right: 16px; z-index: 36;
+                width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--material);
+                backdrop-filter: blur(24px) saturate(1.8); -webkit-backdrop-filter: blur(24px) saturate(1.8); box-shadow: 0 0 0 .5px var(--sep); }
+    .sidebar.m-open { display: block; position: fixed; inset: auto 12px calc(90px + env(safe-area-inset-bottom)) 12px; height: auto; padding: 0; z-index: 37; }
+    .sidebar.m-open .sidebar-in { box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+    .sidebar.m-open .sb-title, .sidebar.m-open .nav { display: none; }
+    .sidebar.m-open .pop { position: static; display: block; width: auto; box-shadow: none; background: transparent; backdrop-filter: none; }
+    .tabbar { display: flex; position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 35;
+              background: var(--material); backdrop-filter: blur(24px) saturate(1.8); -webkit-backdrop-filter: blur(24px) saturate(1.8);
+              border-radius: 999px; padding: 4px; box-shadow: 0 0 0 .5px var(--sep), 0 10px 30px rgba(0,0,0,.14); }
+    .tabbar .tab { flex-direction: column; height: 54px; width: 96px; gap: 2px; padding: 0; justify-content: center; border-radius: 999px;
+                   font-size: 10px; line-height: 12px; font-weight: 500; letter-spacing: 0; color: var(--label); position: relative; }
+    .tabbar .tab .i { color: inherit; width: 26px; height: 26px; }
+    .tabbar .tab[aria-selected="true"] { color: var(--blue); background: var(--fill-3); font-weight: 600; }
+    .tabbar .count { position: absolute; top: 4px; right: 22px; min-width: 18px; height: 18px; font-size: 11px; padding: 0 5px; }
+    .sheet { top: auto; left: 0; right: 0; bottom: 0; width: 100%; height: 88vh; border-radius: 24px 24px 0 0; transform: translateY(100%); }
+    .controls { grid-template-columns: repeat(3, 64px); gap: 12px 22px; }
+    .ctl .circle { width: 58px; height: 58px; }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.6 3.5h2.2l1.6 4.2-2 1.4a11 11 0 0 0 6.5 6.5l1.4-2 4.2 1.6v2.2a2 2 0 0 1-2.2 2A16 16 0 0 1 4.5 5.7a2 2 0 0 1 2.1-2.2Z"/></symbol>
+  <symbol id="i-phone-fill" viewBox="0 0 24 24"><path d="M6.6 3h2.6l1.9 4.8-2.3 1.6a11 11 0 0 0 5.8 5.8l1.6-2.3L21 14.8v2.6a2.4 2.4 0 0 1-2.6 2.4A16.6 16.6 0 0 1 4.2 5.6 2.4 2.4 0 0 1 6.6 3Z"/></symbol>
+  <symbol id="i-tray" viewBox="0 0 24 24"><path d="M4 13.5 6.2 5.6A1.5 1.5 0 0 1 7.6 4.5h8.8a1.5 1.5 0 0 1 1.4 1.1l2.2 7.9v4.5A1.5 1.5 0 0 1 18.5 19.5h-13A1.5 1.5 0 0 1 4 18Zm0 0h4.5l1 2h5l1-2H20"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 20V12M10 20V7M15 20v-6M20 20V4"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11.5" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
+  <symbol id="i-speaker" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4Z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+  <symbol id="i-loop" viewBox="0 0 24 24"><path d="M17 3.5 20 6.5l-3 3"/><path d="M4 11.5v-1a4 4 0 0 1 4-4h12"/><path d="M7 20.5 4 17.5l3-3"/><path d="M20 12.5v1a4 4 0 0 1-4 4H4"/></symbol>
+  <symbol id="i-cross" viewBox="0 0 24 24"><path d="M9.5 4h5v5.5H20v5h-5.5V20h-5v-5.5H4v-5h5.5Z"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 8 13"><path d="m1.5 1.5 5 5-5 5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 5.5 13.5H12L11 21l7.5-10.5H12Z"/></symbol>
+  <symbol id="i-person" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9.5 3.5h5M10.5 3.5v5.5L5 18.5a1.5 1.5 0 0 0 1.3 2h11.4a1.5 1.5 0 0 0 1.3-2L13.5 9V3.5"/><path d="M7.5 14.5h9"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/></symbol>
+  <symbol id="i-ruble" viewBox="0 0 24 24"><path d="M8 20V4.5h5.5a4 4 0 0 1 0 8H6M6 16h8"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z"/></symbol>
+  <symbol id="i-brain" viewBox="0 0 24 24"><path d="M12 5.5a3 3 0 0 0-5.7-1.3A3 3 0 0 0 4 9a3.5 3.5 0 0 0 1 6 3.5 3.5 0 0 0 7 1.5Zm0 0a3 3 0 0 1 5.7-1.3A3 3 0 0 1 20 9a3.5 3.5 0 0 1-1 6 3.5 3.5 0 0 1-7 1.5V5.5"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-in">
+      <div class="sb-title"><h1>Регистратура</h1><p>Поликлиника № 7</p></div>
+      <nav class="nav" role="tablist">
+        <button class="tab" role="tab" data-view="call"><svg class="i"><use href="#i-phone"/></svg><span class="label">Звонок</span></button>
+        <button class="tab" role="tab" data-view="desk"><svg class="i"><use href="#i-tray"/></svg><span class="label">Рабочее место</span><span class="count" id="tCount" hidden>0</span></button>
+        <button class="tab" role="tab" data-view="analytics"><svg class="i"><use href="#i-chart"/></svg><span class="label">Аналитика</span></button>
+      </nav>
+      <div class="sb-foot">
+        <div class="segmented theme" role="group" aria-label="Оформление">
+          <button data-theme-set="auto" aria-pressed="true">Авто</button><button data-theme-set="light" aria-pressed="false">Светлая</button><button data-theme-set="dark" aria-pressed="false">Тёмная</button>
+        </div>
+        <button class="status-btn" id="statusBtn"><span class="dot"></span><span>Все системы работают</span></button>
+        <div class="pop" id="statusPop">
+          <div class="pop-h">Из чего собран ассистент</div>
+          <div class="kv" id="statusKv"></div>
+          <div class="actions" id="statusActions"></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <!-- ======================= ЗВОНОК ======================= -->
+    <section class="view" id="view-call">
+      <div class="call-grid">
+        <div class="side">
+          <div class="phone">
+            <div class="avatar" id="avatar" data-s="idle"><svg class="i"><use href="#i-cross"/></svg></div>
+            <h3>Регистратура</h3>
+            <div class="who-sub">Поликлиника № 7</div>
+            <div class="call-state" id="state" data-s="idle"><span id="stateTxt">Нажмите, чтобы позвонить</span><span class="num" id="timer"></span></div>
+            <div class="lvl" id="lvl" hidden><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="controls">
+              <label class="ctl"><input type="checkbox" id="speakToggle" checked><span class="circle"><svg class="i"><use href="#i-speaker"/></svg></span>Динамик</label>
+              <div class="ctl"><button class="circle" id="mic" data-s="idle" aria-label="Говорить"><svg class="i"><use href="#i-mic"/></svg></button>Говорить</div>
+              <label class="ctl"><input type="checkbox" id="callMode" checked><span class="circle"><svg class="i"><use href="#i-loop"/></svg></span>Без рук</label>
+              <div></div>
+              <div class="ctl go" id="callBtnWrap"><button class="circle" id="callBtn" aria-label="Позвонить"><svg class="i"><use href="#i-phone-fill"/></svg></button><span id="callBtnTxt">Позвонить</span></div>
+              <div></div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-h"><h3>Что понял</h3></div>
+            <div class="group kv" id="stateKv"><div class="row"><span class="grow secondary">Пока ничего</span></div></div>
+          </div>
+          <div class="section">
+            <div class="section-h"><h3>Последний ход</h3><span class="sub" id="who">—</span></div>
+            <div class="group kv">
+              <div class="row"><div class="meter"><span>Распознавание</span><span class="secondary num" id="vStt">—</span><div class="bar"><i id="bStt"></i></div></div></div>
+              <div class="row"><div class="meter"><span>Понимание</span><span class="secondary num" id="vNlu">—</span><div class="bar"><i id="bNlu"></i></div></div></div>
+              <div class="row"><div class="meter"><span>Синтез речи</span><span class="secondary num" id="vTts">—</span><div class="bar"><i id="bTts"></i></div></div></div>
+            </div>
+          </div>
+          <div class="section" id="demoCard" hidden>
+            <div class="section-h"><h3>Тестовые пациенты</h3></div>
+            <div class="group kv" id="demoPatients"></div>
+          </div>
+        </div>
+
+        <div class="chat">
+          <div class="chat-h"><span class="timer num" id="chatTimer"></span><b>Расшифровка</b><button class="btn plain" id="newCall">Заново</button></div>
+          <div class="log" id="log"></div>
+          <p class="notice" id="notice"></p>
+          <div class="composer">
+            <button class="round" id="mic2" aria-label="Говорить"><svg class="i"><use href="#i-mic"/></svg></button>
+            <div class="field">
+              <input id="text" placeholder="Сообщение" aria-label="Сообщение ассистенту" autocomplete="off">
+              <button class="send" id="send" aria-label="Отправить"><svg class="i"><use href="#i-up"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= РАБОЧЕЕ МЕСТО ======================= -->
+    <section class="view" id="view-desk">
+      <div class="large-title"><div><h2>Рабочее место</h2><p>Сложные звонки приходят с карточкой — суть уже известна, переспрашивать не нужно.</p></div></div>
+      <div class="desk">
+        <div class="section">
+          <div class="section-h"><h3>Переводы</h3><span class="sub" id="tSub"></span></div>
+          <div id="transfers"></div>
+        </div>
+        <div class="section">
+          <div class="section-h"><h3>Обзвон на завтра</h3><span class="sub">по риску неявки</span></div>
+          <div class="group" id="reminders"></div>
+          <div class="section-foot" id="reminderNote" hidden></div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-h"><h3>Журнал записей</h3><span class="sub" id="jSource"></span></div>
+        <div class="toolbar">
+          <div class="segmented" id="jFilters"></div>
+          <div class="right">
+            <label class="search"><svg class="i"><use href="#i-search"/></svg><input id="jSearch" placeholder="Поиск" autocomplete="off"></label>
+            <button class="btn" id="jRefresh" title="Перечитать со стенда"><svg class="i"><use href="#i-refresh"/></svg></button>
+            <button class="btn" id="jCsv" title="Скачать CSV"><svg class="i"><use href="#i-down"/></svg>CSV</button>
+          </div>
+        </div>
+        <div class="group" id="journal"></div>
+        <div class="section-foot" id="jNote" hidden></div>
+      </div>
+    </section>
+
+    <!-- ======================= АНАЛИТИКА ======================= -->
+    <section class="view" id="view-analytics">
+      <div class="large-title"><div><h2>Аналитика</h2><p>Живые метрики пилота и эффект на данных поликлиники: 17 772 звонка и 35 470 записей.</p></div></div>
+      <div class="section">
+        <div class="section-h"><h3>Сводка</h3></div>
+        <div class="tiles" id="gauges"></div>
+      </div>
+      <div class="section">
+        <div class="section-h"><h3>Эффект для поликлиники</h3><span class="sub">до и после ассистента</span></div>
+        <div class="compare" id="effect"></div>
+      </div>
+      <div class="section">
+        <div class="grid-2">
+          <div class="chart-card">
+            <div class="tile-h" style="--tint: var(--red)"><svg class="i"><use href="#i-clock"/></svg>Звонки по часам<span class="when">сейчас без ассистента</span></div>
+            <div class="chart" id="cols"></div><div class="xaxis" id="xaxis"></div>
+            <div class="legend"><span class="l1">пропущено</span><span>отвечено</span></div>
+          </div>
+          <div class="chart-card">
+            <div class="tile-h" style="--tint: var(--indigo)"><svg class="i"><use href="#i-brain"/></svg>Кто понимает фразы<span class="when">каскад</span></div>
+            <div id="nluMix"></div>
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="grid-3">
+          <div class="chart-card"><div class="tile-h" style="--tint: var(--blue)"><svg class="i"><use href="#i-calendar"/></svg>Цели обращений</div><div id="intents"></div></div>
+          <div class="chart-card"><div class="tile-h" style="--tint: var(--orange)"><svg class="i"><use href="#i-person"/></svg>Причины переводов</div><div id="reasons" style="--tint: var(--orange)"></div></div>
+          <div class="chart-card"><div class="tile-h" style="--tint: var(--teal)"><svg class="i"><use href="#i-flask"/></svg>Качество модулей</div><div class="mix" id="quality"></div></div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-h"><h3>Последние разговоры</h3></div>
+        <div class="group" id="convs"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<button class="m-status" id="mStatus" aria-label="Система и оформление"><span class="dot"></span></button>
+<nav class="tabbar" role="tablist">
+  <button class="tab" role="tab" data-view="call"><svg class="i"><use href="#i-phone"/></svg>Звонок</button>
+  <button class="tab" role="tab" data-view="desk"><svg class="i"><use href="#i-tray"/></svg>Работа<span class="count" id="tCount2" hidden>0</span></button>
+  <button class="tab" role="tab" data-view="analytics"><svg class="i"><use href="#i-chart"/></svg>Аналитика</button>
+</nav>
+
+<div class="sheet-bg" id="drawerBg"></div>
+<aside class="sheet" id="drawer">
+  <div class="sheet-h"><button class="btn plain" id="dDelete" style="position:absolute;left:10px;color:var(--red)">Удалить</button><b id="dTitle">Разговор</b><button class="btn plain" id="dClose">Готово</button></div>
+  <div class="log" id="dLog"></div>
+</aside>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const pct = (x) => (x == null ? "—" : Math.round(x * 100) + "%");
+const ms = (x) => (x == null ? "—" : x >= 1000 ? (x / 1000).toFixed(1).replace(".", ",") + " с" : Math.round(x) + " мс");
+const WHO = { phrasebook: "фразник", student: "локальная модель", llm: "GigaChat", rules: "правила", none: "—" };
+const fmt = new Intl.DateTimeFormat("ru-RU", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+const ago = (t) => { const s = Math.round(Date.now() / 1000 - t); return s < 60 ? "только что" : s < 3600 ? Math.round(s / 60) + " мин назад" : s < 86400 ? Math.round(s / 3600) + " ч назад" : new Date(t * 1000).toLocaleDateString("ru-RU", { day: "numeric", month: "short" }); };
+const plural = (n, a, b, c) => (n % 10 === 1 && n % 100 !== 11 ? a : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? b : c);
+const icon = (id, cls = "i") => `<svg class="${cls}"><use href="#i-${id}"/></svg>`;
+const CHEV = `<svg class="chev" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m1.5 1.5 5 5-5 5"/></svg>`;
+const kvRows = (rows) => rows.map(([k, v]) => `<div class="row"><span class="grow">${esc(k)}</span><span class="val">${esc(v)}</span></div>`).join("");
+
+// Рабочее место регистратора защищено токеном (DESK_TOKEN на сервере): спрашиваем один раз и помним в браузере
+const deskToken = () => { try { return localStorage.getItem("deskToken") || ""; } catch (_) { return ""; } };
+async function api(path, body, method, retried) {
+  const headers = { "X-Desk-Token": deskToken(), ...(body === undefined ? {} : { "Content-Type": "application/json" }) };
+  const res = await fetch(path, method ? { method, headers } : body === undefined ? { headers } : { method: "POST", headers, body: JSON.stringify(body) });
+  if (res.status === 401 && !retried) {
+    const token = window.prompt("Токен рабочего места регистратора:");
+    if (token) { try { localStorage.setItem("deskToken", token.trim()); } catch (_) {} return api(path, body, method, true); }
+  }
+  if (!res.ok) throw Object.assign(new Error(await res.text()), { status: res.status });
+  return res.json();
+}
+
+// ---------------- навигация ----------------
+function show(view) {
+  if (!["call", "desk", "analytics"].includes(view)) view = "call";
+  document.querySelectorAll(".view").forEach((v) => v.classList.toggle("active", v.id === "view-" + view));
+  document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-selected", t.dataset.view === view));
+  if (view === "desk") refreshDesk().catch(() => {});
+  if (view === "analytics") refreshAnalytics().catch(() => {});
+}
+document.querySelectorAll(".tab").forEach((t) => t.onclick = () => { location.hash = t.dataset.view; });
+window.addEventListener("hashchange", () => show(location.hash.slice(1)));
+const current = () => location.hash.slice(1) || (location.pathname === "/dashboard" ? "analytics" : "call");
+
+// ---------------- статус ----------------
+let status = {};
+async function refreshStatus() {
+  status = await api("/api/status");
+  $("statusKv").innerHTML = kvRows([["Речь", status.speech || "только текст"], ["Голос", status.voice || "голос браузера"],
+    ["Понимание", status.understanding], ["МИС", status.mis], ["Телефон", status.phone ? "номер " + status.phone : "не подключён"]]);
+  $("statusActions").innerHTML = status.demo ? `<button class="btn small tinted" id="resetDemo">Сбросить демо-данные</button>` : "";
+  if ($("resetDemo")) $("resetDemo").onclick = async () => { await api("/api/reset", {}); startCall(); };
+  for (const id of ["tCount", "tCount2"]) { $(id).hidden = !status.open_transfers; $(id).textContent = status.open_transfers; }
+}
+$("statusBtn").onclick = (e) => { e.stopPropagation(); $("statusPop").classList.toggle("open"); };
+document.addEventListener("click", (e) => { if (!$("statusPop").contains(e.target)) $("statusPop").classList.remove("open"); });
+
+// ---------------- звонок ----------------
+const SCENARIOS = ["Запишите меня к терапевту на завтра", "Болит зуб, можно в пятницу?", "Когда принимает хирург?",
+  "До скольки вы работаете в субботу?", "Хочу перенести запись", "Соедините с оператором"];
+let sessionId = null, voice = { stt: null, tts: null }, greeting = "", greeted = false, startedAt = null, timerId = null, lastTimes = {};
+
+function setState(s) {
+  const txt = { idle: greeted ? "На линии" : "Нажмите, чтобы позвонить", listening: "Слушаю…", thinking: "Думаю…", speaking: "Говорю…" }[s];
+  curState = s;
+  $("state").dataset.s = s; $("stateTxt").textContent = txt; $("avatar").dataset.s = s;
+  $("mic").dataset.s = s; $("mic2").dataset.s = s;
+  $("lvl").hidden = s !== "listening";
+}
+function setCallButton(on) {
+  $("callBtnWrap").dataset.on = on ? "1" : "0";
+  $("callBtnTxt").textContent = on ? "Завершить" : "Позвонить";
+}
+
+function hero() {
+  $("log").innerHTML = `<div class="hero">
+      <h4>Чем помочь?</h4>
+      <p>Позвоните и скажите, что нужно: записаться, перенести, узнать расписание или задать вопрос. Можно и текстом.</p>
+      <div class="chips">${SCENARIOS.map((s) => `<button class="chip">${esc(s)}</button>`).join("")}</div></div>`;
+  $("log").querySelectorAll(".chip").forEach((c) => c.onclick = () => send(c.textContent));
+}
+
+async function startCall() {
+  endCapture(true); stopAudio(); clearInterval(timerId); $("timer").textContent = ""; $("chatTimer").textContent = "";
+  const r = await api("/api/session", {});
+  sessionId = r.session_id; voice = r.voice || voice; greeting = r.greeting; greeted = false; busy = false;
+  $("demoCard").hidden = !r.demo_patients.length;
+  $("demoPatients").innerHTML = r.demo_patients.map((p) => { const [name, born] = p.split(", "); return `<div class="row"><span class="grow">${esc(name)}</span><span class="val num">${esc(born || "")}</span></div>`; }).join("");
+  resetSide(); setCallButton(false); setState("idle"); hero();
+}
+
+function startTimer() {
+  startedAt = Date.now(); clearInterval(timerId);
+  const tick = () => { const s = Math.floor((Date.now() - startedAt) / 1000); const t = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; $("timer").textContent = t; $("chatTimer").textContent = t; };
+  tick(); timerId = setInterval(tick, 1000);
+}
+
+async function greet(listenAfter) {
+  if (greeted) return;
+  greeted = true; $("log").innerHTML = ""; startTimer(); setCallButton(true);
+  addBot(greeting);
+  if (listenAfter) await speak(greeting); else speak(greeting, true);
+}
+
+function addMsg(cls, text, meta, extra) {
+  const el = document.createElement("div");
+  el.className = "msg " + cls;
+  el.innerHTML = `<div class="bubble">${esc(text)}</div>${meta ? `<div class="meta">${meta}</div>` : ""}${extra || ""}`;
+  $("log").appendChild(el); $("log").scrollTop = $("log").scrollHeight;
+}
+const addBot = (t, meta, extra) => addMsg("bot", t, meta, extra);
+const addUser = (t, meta) => addMsg("user", t, meta);
+
+function resultChip(r) {
+  if (!r.done) return "";
+  const s = r.state || {};
+  if (s.escalation) return `<div><span class="result esc">${icon("person")}Передано сотруднику с карточкой</span></div>`;
+  if (r.result_id) return `<div><span class="result">${icon("check")}${s.intent === "reschedule" ? "Перенесено" : "Записано"} в МИС · № ${esc(r.result_id)}</span></div>`;
+  return `<div><span class="result">${icon("check")}Готово</span></div>`;
+}
+
+let busy = false;   // реплика обрабатывается: вторую не шлём, микрофон не включаем
+async function send(text, sttMeta) {
+  text = text.trim(); if (!text || busy) return;
+  if (!greeted) await greet(false);
+  busy = true; endCapture(true);
+  $("text").value = ""; addUser(text, sttMeta?.label);
+  setState("thinking");
+  let r;
+  try { r = await api("/api/message", { session_id: sessionId, text, stt_ms: sttMeta?.ms ?? null, stt_engine: sttMeta?.engine ?? null }); }
+  catch (e) {
+    busy = false;
+    if (e.status === 404) {  // сервер перезапустился и забыл разговор — начинаем заново, без молчаливого сброса
+      await startCall();
+      notice("Сервер перезапустился, разговор начат заново — повторите, пожалуйста, запрос.");
+      return;
+    }
+    addBot("Связь с сервером прервалась. Повторите, пожалуйста, или напишите текстом."); setState("idle"); return;
+  }
+  busy = false;
+  const conf = r.confidence == null ? "" : ` · уверенность ${Math.round(r.confidence * 100)}%`;
+  const meta = [r.understood ? `Понял: ${esc(r.understood)}` : "", `${WHO[r.nlu] || esc(r.nlu)}${conf} · ${ms(r.latency_ms)}`].filter(Boolean).join(" · ");
+  addBot(r.reply, meta, resultChip(r));
+  lastTimes = { stt: sttMeta?.ms ?? null, nlu: r.latency_ms, tts: null };
+  endMs = r.end_ms || 800;
+  renderSide(r);
+  await speak(r.reply);
+  if (r.done) refreshStatus().catch(() => {});
+}
+
+function resetSide() {
+  lastTimes = {};
+  ["Stt", "Nlu", "Tts"].forEach((k) => { $("b" + k).style.width = "0"; $("v" + k).textContent = "—"; });
+  $("who").textContent = "—";
+  $("stateKv").innerHTML = `<div class="row"><span class="grow secondary">Пока ничего</span></div>`;
+}
+function renderTimes() {
+  const max = Math.max(800, ...Object.values(lastTimes).filter((x) => x != null));
+  [["Stt", lastTimes.stt], ["Nlu", lastTimes.nlu], ["Tts", lastTimes.tts]].forEach(([k, v]) => {
+    $("b" + k).style.width = v == null ? "0" : Math.max(3, (v / max) * 100) + "%";
+    $("v" + k).textContent = v == null ? (k === "Stt" && lastTimes.nlu != null ? "текстом" : "—") : ms(v);
+  });
+}
+const INTENTS = { book: "Запись на приём", schedule: "Расписание врача", status: "Проверить запись", reschedule: "Перенос записи",
+                  cancel: "Отмена записи", escalate: "Перевод на сотрудника", remind: "Напоминание о визите" };
+const QUESTIONS = { referral: "есть ли направление", cancel_or_move: "перенести или отменить", operator: "соединить ли с сотрудником",
+                    offer_book: "записать ли", waitlist: "лист ожидания", is_patient: "это пациент?", will_come: "придёт ли", more: "ещё вопросы" };
+function renderSide(r) {
+  $("who").textContent = WHO[r.nlu] || r.nlu;
+  renderTimes();
+  const s = r.state || {};
+  const rows = [["Цель", INTENTS[s.intent]], ["Врач", s.doctor_name || s.specialty],
+    ["День", s.day ? new Date(s.day).toLocaleDateString("ru-RU", { weekday: "short", day: "numeric", month: "long" }) : null],
+    ["Неделя", !s.day && s.week_of ? "с " + new Date(s.week_of).toLocaleDateString("ru-RU", { day: "numeric", month: "long" }) : null],
+    ["Время", s.time_from ? `${s.time_from.slice(0, 5)}${s.time_to ? "–" + s.time_to.slice(0, 5) : " и позже"}` : null],
+    ["Пациент", s.patient ? `${s.patient.last_name} ${s.patient.first_name}` : s.last_name ? `${s.last_name} ${s.first_name || ""}` : null],
+    ["Ждёт ответа", s.awaiting_confirm ? "подтверждение" : QUESTIONS[s.question]],
+    ["Уверенность", r.confidence == null ? null : `${Math.round(r.confidence * 100)}% · ${{ high: "высокая", medium: "средняя", low: "низкая" }[r.confidence_level] || ""}`]].filter(([, v]) => v);
+  const hint = r.result?.hint ? `<div class="row"><span class="grow secondary" style="font-size:13px;line-height:18px">${esc(r.result.hint)}</span></div>` : "";
+  $("stateKv").innerHTML = rows.length ? kvRows(rows) + hint : `<div class="row"><span class="grow secondary">Пока ничего</span></div>`;
+}
+
+// ---------------- голос как в телефонном звонке ----------------
+// Микрофон включается один раз — по нажатию «Позвонить» (так браузер разрешает звук). Звук идёт в кольцевой
+// буфер 16 кГц, детектор речи работает всё время: порог — от шума комнаты, фраза — от 200 мс голоса,
+// конец — 0,8 с тишины. В запись попадает 0,6 с до начала фразы, поэтому первое слово не теряется.
+// Пока ассистент говорит, микрофон тоже слушает: заговорили громче эха динамика — ассистент замолкает
+// (перебивание голосом, как в телефонии). Распознаётся WAV — без перекодирования webm на сервере.
+const player = new Audio();
+const RATE = 16000, PREROLL_S = 0.6, SPEC_MS = 250;
+// Перебивание: сначала ответ тише (DUCK); говорит дольше BARGE_CONFIRM_MS — замолкаем, «угу» — продолжаем (ADR 045)
+const DUCK = 0.3, BARGE_CONFIRM_MS = 900;
+let turnEnd = null;   // когда пациент договорил — для замера «до первого звука ответа»
+const voiceMetric = (m) => sessionId && fetch("/api/voice-metrics", { method: "POST", headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ session_id: sessionId, ...m }) }).catch(() => {});
+let mic = null, cap = null, curState = "idle";
+let endMs = 800;      // пауза конца фразы; после вопроса «да/нет» сервер просит короткую (0,45 с)
+let playRef = null;   // огибающая звучащей фразы ассистента: эталон эха для перебивания
+function notice(text) { $("notice").style.display = text ? "block" : "none"; $("notice").textContent = text || ""; }
+
+async function ensureMic() {
+  if (!mic) {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const src = ctx.createMediaStreamSource(stream);
+    const proc = ctx.createScriptProcessor(2048, 1, 1);
+    const mute = ctx.createGain(); mute.gain.value = 0;
+    src.connect(proc); proc.connect(mute); mute.connect(ctx.destination);
+    mic = { stream, ctx, proc, floor: 2, ring: [], ringLen: 0 };
+    proc.onaudioprocess = (e) => onAudio(e.inputBuffer.getChannelData(0), ctx.sampleRate);
+  }
+  if (mic.ctx.state === "suspended") await Promise.race([mic.ctx.resume(), new Promise((r) => setTimeout(r, 500))]);
+  return mic;
+}
+
+function downsample(input, rate) {
+  const ratio = rate / RATE, out = new Float32Array(Math.floor(input.length / ratio));
+  for (let i = 0; i < out.length; i++) {
+    const a = Math.floor(i * ratio), b = Math.min(input.length, Math.floor((i + 1) * ratio));
+    let sum = 0; for (let j = a; j < b; j++) sum += input[j];
+    out[i] = sum / Math.max(1, b - a);
+  }
+  return out;
+}
+
+// <barge> Пациент перебивает ассистента? Чистые функции — их же прогоняет tools/bargein_sim.mjs
+// С эталоном (ref — громкость звучащей фразы ассистента, огибающая WAV) ожидаемое эхо = коэффициент связи
+// динамик→микрофон × ref: порог следует за речью ассистента и падает в его паузах. Без эталона (голос браузера) —
+// оценка эха по пикам. И то и другое учится в первые 300 мс ответа и в паузы пациента, но не на его голосе.
+// Пороги подобраны на модели (tools/bargein_sim.mjs, 5 сидов): ни одного ложного срабатывания от эха
+const BARGE = { warmMs: 300, needMs: 250, minRms: 6, overRef: 2.0, overLevel: 1.8, refBackMs: 250, refAheadMs: 60, stepMs: 20 };
+function bargeStep(s, rms, dt, floor, ref = null) {
+  s.age = (s.age || 0) + dt;
+  const warm = s.age < BARGE.warmMs;
+  const echo = ref == null ? (s.echo || 0) : (s.gain || 0) * ref;
+  const loud = !warm && rms > Math.max(BARGE.minRms, echo * (ref == null ? BARGE.overLevel : BARGE.overRef), floor * 4);
+  if (warm || (!loud && !s.voiced)) {
+    const e = s.echo || 0;   // пики эха нужны и с эталоном: между фразами ответа эталона нет
+    s.echo = rms > e ? e * 0.7 + rms * 0.3 : e * 0.97 + rms * 0.03;
+    if (ref != null && ref > 3) {   // связь учим, когда ассистент говорит, а не в его паузах
+      const g = Math.max(0, rms - floor) / ref, G = s.gain || 0;
+      s.gain = g > G ? G * 0.7 + g * 0.3 : G * 0.97 + g * 0.03;
+    }
+  }
+  s.voiced = loud ? s.voiced + dt : Math.max(0, s.voiced - dt / 3);  // паузы между слогами не обнуляют
+  return s.voiced >= BARGE.needMs;
+}
+// Громкость эталона около момента воспроизведения: окно назад покрывает задержку вывода звука и отзвук комнаты
+function refLevel(env, posMs) {
+  const a = Math.max(0, Math.floor((posMs - BARGE.refBackMs) / BARGE.stepMs));
+  const b = Math.min(env.length, Math.ceil((posMs + BARGE.refAheadMs) / BARGE.stepMs) + 1);
+  let m = 0; for (let i = a; i < b; i++) m = Math.max(m, env[i]);
+  return m;
+}
+// Огибающая WAV 16 бит моно (ответ /api/tts) в тех же единицах, что уровень микрофона (rms × 128)
+function envelopeOf(buf) {
+  const v = new DataView(buf); let off = 12, rate = 16000;
+  while (off + 8 <= v.byteLength) {
+    const id = String.fromCharCode(v.getUint8(off), v.getUint8(off + 1), v.getUint8(off + 2), v.getUint8(off + 3));
+    const size = v.getUint32(off + 4, true);
+    if (id === "fmt ") rate = v.getUint32(off + 12, true);
+    if (id === "data") {
+      const n = Math.floor(Math.min(size, v.byteLength - off - 8) / 2), step = Math.round((rate * BARGE.stepMs) / 1000), env = [];
+      for (let i = 0; i < n; i += step) {
+        let sum = 0; const end = Math.min(n, i + step);
+        for (let j = i; j < end; j++) { const x = v.getInt16(off + 8 + j * 2, true) / 32768; sum += x * x; }
+        env.push(Math.sqrt(sum / Math.max(1, end - i)) * 128);
+      }
+      return env;
+    }
+    off += 8 + size + (size % 2);
+  }
+  return null;
+}
+// </barge>
+
+function onAudio(input, rate) {
+  let sum = 0; for (let i = 0; i < input.length; i++) sum += input[i] * input[i];
+  const rms = Math.sqrt(sum / input.length) * 128, dt = (input.length / rate) * 1000, now = Date.now();
+  const chunk = downsample(input, rate);
+  mic.ring.push(chunk); mic.ringLen += chunk.length;
+  while (mic.ringLen - mic.ring[0].length > PREROLL_S * RATE) mic.ringLen -= mic.ring.shift().length;
+  $("lvl").style.setProperty("--lvl", Math.min(1, rms / 25).toFixed(2));
+  if (!cap) {  // тишина между репликами — учим шум комнаты
+    if (curState !== "speaking") mic.floor = Math.min(20, mic.floor * 0.97 + Math.min(rms, mic.floor * 3 + 1) * 0.03);
+    return;
+  }
+  if (cap.mode === "barge") {
+    const ref = playRef && !player.paused ? refLevel(playRef, player.currentTime * 1000) : null;
+    if (bargeStep(cap, rms, dt, mic.floor, ref)) bargeIn();
+    return;
+  }
+  cap.samples.push(chunk);
+  cap.maxRms = Math.max(cap.maxRms, rms);
+  const threshold = Math.max(4, mic.floor * 2.5 + 1);
+  if (rms > threshold) { cap.voiced += dt; cap.quietSince = null; cap.spec = null; if (cap.voiced >= 200) cap.heard = true; }
+  if (cap.ducked && cap.voiced >= BARGE_CONFIRM_MS) {  // говорит долго — это перебивание, а не «угу»
+    cap.ducked = false; stopAudio(); voiceMetric({ barge: true });
+  }
+  else {
+    cap.voiced = Math.max(0, cap.voiced - dt / 2);
+    if (cap.heard) cap.quietSince = cap.quietSince || now;
+    else mic.floor = Math.min(20, mic.floor * 0.95 + rms * 0.05);
+  }
+  if (!cap.heard && now - cap.began > 8000) {
+    // Тишина: в режиме «без рук» продолжаем слушать, как в телефоне (запись — заново), до 30 с; иначе — стоп
+    if ($("callMode").checked && now - cap.opened < 30000) { cap.samples = []; cap.began = now; cap.maxRms = 0; return; }
+    return endCapture(false);
+  }
+  // Раннее распознавание: пауза уже 0,25 с — отправляем фразу, не дожидаясь конца паузы. Заговорили снова —
+  // результат выбрасываем; промолчали — к концу паузы текст уже готов (распознавание шло, пока мы ждали)
+  if (cap.heard && cap.quietSince && !cap.spec && now - cap.quietSince > SPEC_MS && endMs > SPEC_MS) {
+    cap.spec = sttRequest(wavBlob(cap.samples)); cap.spec.catch(() => {});
+  }
+  if ((cap.heard && cap.quietSince && now - cap.quietSince > endMs) || now - cap.began > 25000) endCapture(false);
+}
+
+const envelope = (blob) => blob.arrayBuffer().then(envelopeOf);
+
+function wavBlob(chunks) {
+  const n = chunks.reduce((a, c) => a + c.length, 0), buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+  const str = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+  str(0, "RIFF"); v.setUint32(4, 36 + n * 2, true); str(8, "WAVE"); str(12, "fmt "); v.setUint32(16, 16, true);
+  v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, RATE, true); v.setUint32(28, RATE * 2, true);
+  v.setUint16(32, 2, true); v.setUint16(34, 16, true); str(36, "data"); v.setUint32(40, n * 2, true);
+  let o = 44; for (const c of chunks) for (let i = 0; i < c.length; i++, o += 2) v.setInt16(o, Math.max(-1, Math.min(1, c[i])) * 32767, true);
+  return new Blob([buf], { type: "audio/wav" });
+}
+
+function beginCapture(mode, preroll = 0.25) {
+  // В запись — хвост буфера до начала: у «слушаю» короткий (там может быть эхо ответа), у перебивания — длиннее
+  const keep = Math.round(preroll * RATE), pre = [];
+  let got = 0; for (let i = mic.ring.length - 1; i >= 0 && got < keep; i--) { pre.unshift(mic.ring[i]); got += mic.ring[i].length; }
+  cap = { mode, samples: pre, heard: false, voiced: 0, quietSince: null, began: Date.now(), opened: Date.now(), maxRms: 0 };
+}
+function endCapture(discard) {
+  const c = cap; cap = null;
+  if (!c || discard || c.mode !== "listen") return;
+  const ended = c.quietSince || Date.now();
+  if (c.ducked && !player.paused) return judgeBarge(c.spec || sttRequest(wavBlob(c.samples)), ended);
+  if (c.heard || c.maxRms > 10) { turnEnd = ended; transcribe(c.spec || sttRequest(wavBlob(c.samples))); }
+  else { setState("idle"); notice("Микрофон выключен — нажмите «Говорить», когда будете готовы."); }
+}
+const listening = () => cap?.mode === "listen";
+
+async function startListening() {
+  if (busy || listening()) return;
+  if (!voice.stt) { notice("Распознавание речи не подключено — напишите текстом."); return; }
+  if (!greeted) { await greet(true); return; }
+  stopAudio();
+  try { await ensureMic(); } catch (e) { notice("Нет доступа к микрофону: " + e.message); return; }
+  notice("");
+  beginCapture("listen"); setState("listening");
+}
+function stopListening() { if (listening()) endCapture(false); }   // вручную: «Говорить» ещё раз — отправить сказанное
+function bargeIn(manual = false) {
+  // Голос поверх ответа: ответ тише, а не стоп — вдруг это «угу». Кнопка или голос браузера (его не приглушить) —
+  // замолкаем сразу. В запись — начало фразы пациента из буфера
+  const duck = !manual && !player.paused;
+  if (duck) player.volume = DUCK; else { stopAudio(); voiceMetric({ barge: true }); }
+  beginCapture("listen", PREROLL_S);
+  Object.assign(cap, { heard: true, voiced: 300, ducked: duck });
+  setState("listening");
+}
+// Короткая реплика поверх ответа: поддакивание — ответ продолжается в полную громкость; иначе — замолкаем и отвечаем
+async function judgeBarge(pending, ended) {
+  let r = null;
+  try { r = await pending; } catch (_) { /* ниже — как обычная фраза */ }
+  if (r?.backchannel && !player.paused) {
+    player.volume = 1; voiceMetric({ backchannel: true }); setState("speaking"); armBargeIn();
+    return;
+  }
+  stopAudio(); voiceMetric({ barge: true });
+  turnEnd = ended;
+  transcribe(r ? Promise.resolve(r) : pending);
+}
+
+const sttRequest = (blob) => fetch("/api/stt", { method: "POST", headers: { "Content-Type": blob.type, "X-Session-Id": sessionId || "" }, body: blob })
+  .then(async (res) => { if (!res.ok) throw new Error(await res.text()); return res.json(); });
+async function transcribe(pending) {
+  setState("thinking");
+  try {
+    const r = await pending;
+    const engine = { gigaam: "GigaAM", whisper: "Whisper" }[r.engine] || "";
+    if (r.text) send(r.text, { ms: r.latency_ms, engine: r.engine, label: `${engine} · ${ms(r.latency_ms)}` });
+    else { setState("idle"); notice("Не расслышала — скажите, пожалуйста, ещё раз."); if ($("callMode").checked) startListening(); }
+  } catch (e) { setState("idle"); notice("Не удалось распознать речь. Повторите или напишите текстом."); }
+}
+
+// Озвучка по фразам: первая играет сразу, следующая синтезируется, пока звучит текущая
+let speakToken = 0, stopPlaying = null;
+function stopAudio() { speakToken++; playRef = null; player.pause(); player.volume = 1; stopPlaying?.(); stopPlaying = null; window.speechSynthesis?.cancel(); }
+function splitSpeech(text) {
+  const parts = [];
+  for (const piece of text.trim().split(/(?<=[.!?;])\s+/)) {
+    if (parts.length && parts[parts.length - 1].length < 18) parts[parts.length - 1] += " " + piece; else if (piece) parts.push(piece);
+  }
+  return parts.length ? parts : [text];
+}
+const ttsBlob = (text) => fetch("/api/tts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text }) })
+  .then((r) => (r.ok ? r.blob() : Promise.reject(new Error(r.status))));
+function playBlob(blob) {
+  return new Promise((resolve) => {
+    if (player.src) URL.revokeObjectURL(player.src);
+    player.src = URL.createObjectURL(blob);
+    stopPlaying = resolve; player.onended = resolve; player.onerror = resolve;
+    player.play().catch(resolve);
+  });
+}
+function armBargeIn() {  // «без рук»: пока ассистент говорит, слушаем, не перебьют ли его
+  if (mic && voice.stt && $("callMode").checked && greeted) { endCapture(true); beginCapture("barge"); }
+}
+async function speak(text, noListen) {
+  const next = () => {
+    player.volume = 1;
+    if (cap?.mode === "barge") endCapture(true);
+    if (listening()) { setState("listening"); return; }  // пациент ещё говорит поверх конца ответа
+    setState("idle");
+    if (!noListen && $("callMode").checked && voice.stt && greeted) startListening();
+  };
+  if (!$("speakToggle").checked) return next();
+  stopAudio();
+  const token = speakToken;
+  if (voice.tts) {
+    try {
+      const parts = splitSpeech(text), t = performance.now();
+      let upcoming = ttsBlob(parts[0]);
+      for (let i = 0; i < parts.length; i++) {
+        const blob = await upcoming;
+        if (token !== speakToken) return;
+        if (i === 0) {
+          setState("speaking"); armBargeIn();
+          if (lastTimes.nlu != null) { lastTimes.tts = performance.now() - t; renderTimes(); }
+        }
+        if (i + 1 < parts.length) upcoming = ttsBlob(parts[i + 1]);
+        playRef = await envelope(blob).catch(() => null);
+        if (i === 0 && turnEnd != null) { voiceMetric({ ttfa_ms: Date.now() - turnEnd }); turnEnd = null; }
+        await playBlob(blob);
+        playRef = null;
+        if (token !== speakToken) return;
+      }
+      return next();
+    } catch (_) { if (token !== speakToken) return; /* запасной вариант ниже */ }
+  }
+  if (!window.speechSynthesis) return next();
+  const u = new SpeechSynthesisUtterance(text); u.lang = "ru-RU";
+  const local = speechSynthesis.getVoices().find((v) => v.lang.startsWith("ru") && v.localService); if (local) u.voice = local;
+  u.onend = () => { if (token === speakToken) next(); }; setState("speaking"); armBargeIn(); speechSynthesis.speak(u);
+}
+const toggleMic = () => (listening() ? stopListening() : curState === "speaking" ? (cap ? bargeIn(true) : startListening()) : startListening());
+if (!navigator.mediaDevices?.getUserMedia) { $("mic").disabled = true; $("mic2").disabled = true; }
+$("mic").onclick = toggleMic; $("mic2").onclick = toggleMic;
+$("callBtn").onclick = async () => {
+  if (greeted) return startCall();
+  if (voice.stt) await ensureMic().catch((e) => notice("Нет доступа к микрофону: " + e.message));  // по нажатию — так браузер разрешает звук
+  greet(true);
+};
+$("send").onclick = () => send($("text").value);
+$("text").addEventListener("keydown", (e) => { if (e.key === "Enter") send($("text").value); });
+$("newCall").onclick = startCall;
+
+// ---------------- рабочее место ----------------
+// Структурированные поля карточки перевода — отдельной строкой, а не только текстом в «что сделано»
+function patientLine(x) {
+  const p = x.patient;
+  const who = p ? `${esc([p.last_name, p.first_name].filter(Boolean).join(" "))}${p.birth_date ? ", " + esc(new Date(p.birth_date).toLocaleDateString("ru-RU")) : ""}` : "не назвался";
+  const tags = [p ? (p.found_in_mis ? "найден в МИС" : "в МИС не найден") : "", x.escalation_id ? `заявка № ${esc(x.escalation_id)}` : "",
+                x.emergency_advised ? "рекомендовано 103 / 112" : ""].filter(Boolean);
+  return `<div class="row" style="padding:4px 0"><span class="grow"><span class="secondary">Пациент:</span> ${who}</span>${tags.map((t) => `<span class="badge">${t}</span>`).join(" ")}</div>`;
+}
+const cardJson = (x) => Object.fromEntries(["schema", "id", "priority", "reason_code", "reason", "summary", "patient", "escalation_id", "emergency_advised", "done", "at"].map((k) => [k, x[k] ?? null]));
+async function refreshDesk() {
+  const [t, rem] = await Promise.all([api("/api/transfers"), api("/api/reminders")]);
+  const open = t.items.filter((x) => !x.taken).length;
+  $("tSub").textContent = t.items.length ? `${open} в очереди` : "";
+  $("transfers").innerHTML = t.items.length ? t.items.map((x) => `
+    <div class="tcard${x.taken ? " taken" : ""}" data-p="${x.priority}">
+      <div class="top"><span class="prio ${x.priority}">${x.priority}</span><h4>${x.rule ? esc(x.rule) + " · " : ""}${esc(x.reason)}</h4><span class="when">${esc(x.channel)} · ${ago(x.at)}</span></div>
+      <div class="summary">${esc(x.summary)}</div>
+      ${patientLine(x)}
+      ${x.done.length ? `<ul class="done-list">${x.done.map((d) => `<li>${icon("check")}<span>${esc(d)}</span></li>`).join("")}</ul>` : ""}
+      <details class="dialog"><summary>${CHEV}Разговор с ассистентом</summary>${x.dialog.map((d) => `<p><span class="secondary">${d.role === "patient" ? "Пациент" : "Ассистент"}:</span> ${esc(d.text)}</p>`).join("")}</details>
+      <details class="dialog"><summary>${CHEV}Карточка для интеграций (clinic.transfer/v1)</summary><pre class="json">${esc(JSON.stringify(cardJson(x), null, 1))}</pre></details>
+      <div class="foot">${x.taken ? `<span class="secondary">Взято в работу</span>` : `<button class="btn filled small" data-take="${esc(x.id)}">Взять в работу</button>`}</div>
+    </div>`).join("") : `<div class="group"><div class="empty">Переводов нет. Попробуйте в звонке: «Соедините с оператором» или «Давит в груди».</div></div>`;
+  $("transfers").querySelectorAll("[data-take]").forEach((b) => b.onclick = async () => {
+    b.disabled = true;
+    try { await api(`/api/transfers/${b.dataset.take}/take`, {}); refreshDesk(); refreshStatus(); }
+    catch (e) { b.disabled = false; notice("Не удалось взять в работу — повторите. " + (e.status === 401 ? "Нужен токен рабочего места." : "")); }
+  });
+
+  $("reminders").innerHTML = rem.items.length ? rem.items.map((b) => {
+    const r = b.risk, cls = r == null ? "low" : r >= 0.15 ? "high" : r >= 0.08 ? "mid" : "low";
+    const hard = b.skip && !/окна обзвона|24 часов/.test(b.skip);  // отказ, подтверждение, попытки — не звоним и в демо
+    return `<div class="row"><div class="grow"><span class="title">${esc(b.patient)}</span>
+        <span class="subtitle">${esc(b.specialty)} · ${fmt.format(new Date(b.start))}${b.skip ? ` · ${esc(b.skip)}` : b.attempts ? ` · попыток: ${b.attempts}` : ""}</span></div>
+      ${r == null ? "" : `<span class="risk ${cls} num" title="${esc((b.why || []).join(", "))}">${Math.round(r * 100)}%</span>`}
+      ${hard ? "" : `<button class="btn small tinted" data-remind="${esc(b.id)}">В окне</button>${status.phone ? `<button class="btn small" data-phone="${esc(b.id)}" aria-label="Позвонить пациенту с напоминанием" title="Позвонить с напоминанием">${icon("phone")}</button>` : ""}`}</div>`;
+  }).join("") : `<div class="empty">Предстоящих записей нет.</div>`;
+  const m = rem.model;
+  const log = rem.log.length ? " Итоги: " + rem.log.slice(0, 4).map((l) => `№${l.booking} — ${l.note}`).join("; ") + "." : "";
+  const w = rem.window || {}, sms = rem.sms || { items: [] };
+  const rules = ` Обзвон С-10: ${w.text || ""}; ${w.auto ? "автоматически" : "автоматический обзвон выключен"}.` +
+    (w.demo ? " Демо-режим: кнопки звонят вне окна обзвона; отказы, подтверждения и лимит попыток соблюдаются." : "") +
+    ` SMS на завтра: ${sms.items.length} — канал ${sms.channel || "не подключён"}.`;
+  $("reminderNote").hidden = false;
+  $("reminderNote").textContent = (m ? `Сначала звоним тем, кто вероятнее не придёт: 30% записей с наибольшим риском дают ${pct(m.top30_share_of_noshows)} неявок (AUC ${m.auc}).` : "") + rules + log;
+  $("reminders").querySelectorAll("[data-remind]").forEach((b) => b.onclick = () => startReminder(b.dataset.remind));
+  $("reminders").querySelectorAll("[data-phone]").forEach((b) => b.onclick = async () => {
+    try { await api(`/api/reminders/${b.dataset.phone}/phone`, {}); b.textContent = "Звоним…"; }
+    catch (e) { b.textContent = "Не удалось"; if (e.status === 409) notice(e.message.replace(/^.*"detail":"?|"?}$/g, "")); }
+  });
+
+  refreshJournal();
+}
+
+// ---------------- журнал записей ----------------
+let journal = { items: [], counts: {} }, jFilter = "all";
+const STATUS_CLASS = { "Запланирована": "planned", "Завершена": "done", "Отменена": "cancelled" };
+const STATUS_SHORT = { "Запланирована": "Предстоят", "Завершена": "Прошли", "Отменена": "Отменены" };
+let journalJson = "";
+async function refreshJournal(refresh) {
+  const fresh = await api("/api/visits" + (refresh ? "?refresh=1" : ""));
+  const json = JSON.stringify(fresh);
+  if (json === journalJson && !refresh) return;  // без изменений — не сбрасываем прокрутку
+  journalJson = json; journal = fresh;
+  const total = journal.items.length;
+  $("jSource").textContent = `${total} ${plural(total, "запись", "записи", "записей")} · ${journal.source}`;
+  const tabs = [["all", "Все"], ...["Запланирована", "Завершена", "Отменена"].map((st) => [st, `${STATUS_SHORT[st]} · ${journal.counts[st] || 0}`])];
+  $("jFilters").innerHTML = tabs.map(([k, label]) => `<button data-f="${esc(k)}" aria-pressed="${jFilter === k}">${esc(label)}</button>`).join("");
+  $("jFilters").querySelectorAll("[data-f]").forEach((b) => b.onclick = () => { jFilter = b.dataset.f; refreshJournalView(); $("jFilters").querySelectorAll("[data-f]").forEach((x) => x.setAttribute("aria-pressed", x.dataset.f === jFilter)); });
+  refreshJournalView();
+}
+function journalRows() {
+  const q = $("jSearch").value.trim().toLowerCase();
+  return journal.items.filter((v) => (jFilter === "all" || v.status === jFilter)
+    && (!q || `${v.id} ${v.patient} ${v.doctor} ${v.specialty}`.toLowerCase().includes(q)));
+}
+function refreshJournalView() {
+  const rows = journalRows(), shown = rows.slice(0, 300);
+  $("journal").innerHTML = rows.length ? `<table><thead><tr><th>№</th><th>Пациент</th><th>Врач</th><th>Приём</th><th>Статус</th></tr></thead><tbody>${shown.map((v) => `
+    <tr><td class="num secondary">${esc(v.id)}</td>
+      <td>${esc(v.patient) || '<span class="tertiary">—</span>'}${v.birth_date ? `<small class="num">${esc(v.birth_date)}</small>` : ""}</td>
+      <td>${esc(v.specialty)}<small>${esc(v.doctor)}</small></td>
+      <td class="nowrap num">${v.at ? fmt.format(new Date(v.at)) : "—"}</td>
+      <td><span class="pill ${STATUS_CLASS[v.status] || ""}">${esc(v.status)}</span>${v.note ? `<small>${esc(v.note)}</small>` : ""}</td></tr>`).join("")}</tbody></table>`
+    : `<div class="empty">${journal.items.length ? "Ничего не найдено" : "Записей пока нет — запишитесь в окне звонка."}</div>`;
+  $("jNote").hidden = rows.length <= shown.length;
+  $("jNote").textContent = `Показаны первые ${shown.length} из ${rows.length}. Уточните поиск.`;
+}
+$("jSearch").addEventListener("input", refreshJournalView);
+$("jRefresh").onclick = () => refreshJournal(true).catch(() => {});
+$("jCsv").onclick = () => {
+  const head = ["№", "Пациент", "Дата рождения", "Специальность", "Врач", "Приём", "Статус"];
+  const lines = [head, ...journalRows().map((v) => [v.id, v.patient, v.birth_date, v.specialty, v.doctor, (v.at || "").replace("T", " "), v.status])]
+    .map((r) => r.map((x) => `"${String(x ?? "").replace(/"/g, '""')}"`).join(";"));
+  const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "журнал_записей.csv"; a.click();
+};
+
+async function startReminder(id) {
+  location.hash = "call";
+  endCapture(true); stopAudio();
+  let r;
+  try { r = await api(`/api/reminders/${encodeURIComponent(id)}/call`, {}); }
+  catch (e) { notice(e.status === 409 ? e.message.replace(/^.*"detail":"?|"?}$/g, "") : "Не удалось начать напоминание."); return; }
+  sessionId = r.session_id; greeting = r.greeting; greeted = true; busy = false;
+  $("log").innerHTML = ""; resetSide(); startTimer(); setCallButton(true); setState("idle");
+  addBot(r.greeting, "исходящий звонок · напоминание о визите");
+  await speak(r.greeting);
+}
+
+// ---------------- аналитика ----------------
+function hbars(obj) {
+  const entries = Object.entries(obj || {}).sort((a, b) => b[1] - a[1]);
+  if (!entries.length) return `<div class="empty" style="padding:24px 0 10px">Пока нет данных — поговорите с ассистентом.</div>`;
+  const top = Math.max(...entries.map(([, v]) => v));
+  return `<div class="hbars">${entries.map(([k, v]) => `<div class="hbar"><span>${esc(k)}</span><span class="v num">${v}</span><div class="bar"><i style="width:${(v / top) * 100}%"></i></div></div>`).join("")}</div>`;
+}
+function tile({ tint, ico, title, when, value, unit, cap, share }) {
+  return `<div class="tile" style="--tint: var(--${tint})">
+    <div class="tile-h">${icon(ico)}${esc(title)}<span class="when">${esc(when || "")}${CHEV}</span></div>
+    <div class="value"><b class="rounded num">${value}</b>${unit ? `<span>${unit}</span>` : ""}</div>
+    <div class="cap">${cap}</div>
+    ${share == null ? "" : `<div class="track"><i style="width:${Math.max(0, Math.min(100, share * 100))}%"></i></div>`}</div>`;
+}
+function compare({ tint, ico, title, text, was, now, wasLabel, nowLabel, wasShare, nowShare }) {
+  return `<div class="cmp" style="--tint: var(--${tint})">
+    <div class="tile-h">${icon(ico)}${esc(title)}</div><p>${text}</p>
+    <div class="bars">
+      <div class="b now"><div class="lab"><b class="rounded num">${now}</b><span>${nowLabel}</span></div><div class="bar"><i style="width:${Math.max(1, nowShare * 100)}%"></i></div></div>
+      <div class="b was"><div class="lab"><b class="rounded num">${was}</b><span>${wasLabel}</span></div><div class="bar"><i style="width:${Math.max(1, wasShare * 100)}%"></i></div></div>
+    </div></div>`;
+}
+
+async function refreshAnalytics() {
+  const [d, convs] = await Promise.all([api("/api/dashboard"), api("/api/conversations")]);
+  const l = d.live, a = d.analytics, e = d.eval;
+  const splitMs = (x) => x == null ? ["—", ""] : x >= 1000 ? [(x / 1000).toFixed(1).replace(".", ","), "с"] : [String(Math.round(x)), "мс"];
+  const [latV, latU] = splitMs(l.latency_p95);
+  const resolved = l.resolved_share ?? a?.after.automated_share_of_calls;
+  $("gauges").innerHTML = [
+    l.ttfa_p50 != null
+      // Живой замер: от конца фразы пациента до первого звука ответа (телефон и веб), перебивания и «угу»
+      ? tile({ tint: "orange", ico: "bolt", title: "До первого звука", when: "медиана", value: splitMs(l.ttfa_p50)[0], unit: splitMs(l.ttfa_p50)[1],
+               cap: `p90 ${splitMs(l.ttfa_p90).join(" ")} · p95 ${splitMs(l.ttfa_p95).join(" ")} · дольше 2 с — ${pct(l.ttfa_over_2s)}` +
+                    (l.barge_ins_per_call == null ? "" : ` · перебиваний на звонок ${String(l.barge_ins_per_call).replace(".", ",")}`) +
+                    (l.backchannels ? ` · «угу» без остановки — ${l.backchannels}` : ""),
+               share: Math.min(1, 1000 / Math.max(l.ttfa_p50, 1)) })
+      : tile({ tint: "orange", ico: "bolt", title: "Задержка ответа", when: "p95", value: latV, unit: latU,
+           cap: "распознавание и понимание · цель до 800 мс", share: l.latency_p95 == null ? null : Math.min(1, 800 / Math.max(l.latency_p95, 1)) }),
+    tile({ tint: "green", ico: "check", title: "Решено без сотрудника", when: l.resolved_share == null ? "оценка" : "пилот",
+           value: resolved == null ? "—" : Math.round(resolved * 100), unit: resolved == null ? "" : "%",
+           cap: l.resolved_share == null ? "на данных кейса · цель от 60%" : `${l.finished} ${plural(l.finished, "завершённый разговор", "завершённых разговора", "завершённых разговоров")} · цель от 60%`, share: resolved ?? 0 }),
+    tile({ tint: "blue", ico: "person", title: "Стенд «LLM-пациент»", when: "сценарии", value: e ? e.ok : "—", unit: e ? `из ${e.total}` : "",
+           cap: "успех проверяется по фактам в МИС", share: e ? e.ok / e.total : 0 }),
+    tile({ tint: "pink", ico: "heart", title: "Оценка пациентов", when: "1–5",
+           value: l.csat == null ? "—" : String(l.csat).replace(".", ","), unit: l.csat == null ? "" : "из 5",
+           cap: l.csat == null ? "спрашиваем после записи, переноса и отмены · цель от 4" : `${l.csat_count} ${plural(l.csat_count, "оценка", "оценки", "оценок")} · цель от 4`,
+           share: l.csat == null ? null : l.csat / 5 }),
+  ].join("");
+  if (a) {
+    const c = a.calls, n = a.noshow, f = a.after;
+    $("effect").innerHTML = [
+      compare({ tint: "red", ico: "phone", title: "Пропущенные звонки", text: "Ассистент берёт трубку сразу — ни один звонок не теряется.",
+                now: "0%", nowLabel: "с ассистентом", was: pct(c.missed_share), wasLabel: "сейчас", nowShare: 0, wasShare: c.missed_share }),
+      compare({ tint: "orange", ico: "clock", title: "Ожидание на линии", text: "Пациент не слушает гудки: ответ — за секунду.",
+                now: "≈1 с", nowLabel: "с ассистентом", was: Math.round(c.wait_avg_sec) + " с", wasLabel: "сейчас в среднем", nowShare: 1 / Math.max(c.wait_avg_sec, 1), wasShare: 1 }),
+      compare({ tint: "purple", ico: "calendar", title: "Неявки на приём", text: "Напоминания по риску неявки освобождают время для других.",
+                now: pct(f.noshow_share), nowLabel: "с напоминаниями", was: pct(n.noshow_share), wasLabel: "сейчас", nowShare: f.noshow_share / Math.max(n.noshow_share, 0.01), wasShare: 1 }),
+      compare({ tint: "green", ico: "ruble", title: "Возврат от неявок", text: `Без участия человека — ${pct(f.automated_share_of_calls)} звонков.`,
+                now: Math.round(f.saved_per_month_rub / 1000) + " тыс. ₽", nowLabel: "в месяц", was: "0 ₽", wasLabel: "сейчас", nowShare: 1, wasShare: 0 }),
+    ].join("");
+    const hours = c.by_hour.filter((h) => h.hour >= 7 && h.hour <= 21), max = Math.max(...hours.map((h) => h.calls));
+    $("cols").innerHTML = hours.map((h) => `<div class="col" style="height:${(h.calls / max) * 100}%" title="${h.hour}:00 — ${h.calls} звонков, пропущено ${pct(h.missed)}, ожидание ${h.wait} с"><i style="height:${h.missed * 100}%"></i></div>`).join("");
+    $("xaxis").innerHTML = hours.map((h) => `<span>${h.hour % 3 === 0 ? h.hour : ""}</span>`).join("");
+  } else {
+    $("effect").innerHTML = `<div class="group" style="grid-column:1/-1"><div class="empty">Нет data/analytics.json — запустите tools/analytics.py на данных кейса.</div></div>`;
+  }
+  const nlu = l.nlu || {}, total = Object.values(nlu).reduce((s, v) => s + v, 0);
+  const seg = (k) => (total ? ((nlu[k] || 0) / total) * 100 : 0);
+  const cas = d.cascade && (d.cascade["data/student"] || Object.values(d.cascade)[0]);
+  const parts = [["phrasebook", "Фразник", "s-phrase"], ["student", "Локальная модель", "s-student"], ["llm", "GigaChat", "s-llm"], ["rules", "Правила", "s-rules"]];
+  $("nluMix").innerHTML = (total
+    ? `<div class="stackbar">${parts.map(([k, , c]) => `<i class="${c}" style="width:${seg(k)}%"></i>`).join("")}</div>
+       <div class="mix" style="margin-top:8px">${parts.map(([k, name, c]) => `<div class="row"><span class="sw ${c}"></span><span class="grow">${name}</span><span class="val num">${Math.round(seg(k))}% · ${ms(l.nlu_ms_median?.[k])}</span></div>`).join("")}</div>`
+    : `<div class="empty" style="padding:24px 0 10px">Пока нет ходов.</div>`) +
+    `<p class="secondary" style="font-size:13px;line-height:18px;margin:10px 0 0">Фразник — ${d.phrasebook ? new Intl.NumberFormat("ru-RU").format(d.phrasebook.templates) + " шаблонов стандартных фраз в хэш-таблице, " : ""}ответ без модели за доли миллисекунды.${cas ? ` Дальше локальная модель отвечает сама в ${pct(cas.coverage)} случаев с точностью ${pct(cas.precision)}; остальное решает GigaChat.` : ""}</p>`;
+  $("intents").innerHTML = hbars(l.intents);
+  $("reasons").innerHTML = hbars(l.reasons);
+  const q = [];
+  if (d.stt_bench?.gigaam?.wer != null) q.push(["Ошибки GigaAM", pct(d.stt_bench.gigaam.wer)]);
+  if (d.stt_bench?.whisper?.wer != null) q.push(["Ошибки Whisper", pct(d.stt_bench.whisper.wer)]);
+  if (d.student?.test_accuracy != null) q.push(["Точность локальной модели", pct(d.student.test_accuracy)]);
+  if (d.student?.rules_test_accuracy != null) q.push(["Точность правил", pct(d.student.rules_test_accuracy)]);
+  if (d.noshow_model) q.push(["Риск неявки, AUC", d.noshow_model.auc]);
+  $("quality").innerHTML = q.length ? q.map(([k, v]) => `<div class="row"><span class="grow">${k}</span><span class="val num">${v}</span></div>`).join("") : `<div class="empty" style="padding:24px 0 10px">Нет данных</div>`;
+  $("convs").innerHTML = convs.items.length ? convs.items.map((c) => `
+    <div class="row click icon" data-conv="${esc(c.id)}">
+      <span class="sq" style="background:${c.channel === "телефон" ? "var(--green)" : "var(--blue)"}">${icon(c.channel === "телефон" ? "phone" : "mic")}</span>
+      <div class="grow"><span class="title">${esc(c.intents.join(", ") || "Разговор")}</span>
+        <span class="subtitle">${esc(c.channel)} · ${ago(c.started)} · ${c.turns} ${plural(c.turns, "реплика", "реплики", "реплик")}</span></div>
+      <span class="val" style="${c.outcome === "escalated" ? "color:var(--orange)" : ""}">${esc(c.outcome_label)}</span>${CHEV}</div>`).join("")
+    : `<div class="empty">Разговоров пока не было.</div>`;
+  $("convs").querySelectorAll("[data-conv]").forEach((r) => r.onclick = () => openConv(r.dataset.conv));
+}
+
+async function openConv(id) {
+  const c = await api(`/api/conversations/${id}`); openConvId = id;
+  $("dTitle").textContent = `${c.channel[0].toUpperCase() + c.channel.slice(1)} · ${new Date(c.started * 1000).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}`;
+  $("dLog").innerHTML = c.turns.map((t) => t.role === "patient"
+    ? `<div class="msg user"><div class="bubble">${esc(t.text)}</div>${t.stt_ms ? `<div class="meta">${esc(t.stt || "")} · ${ms(t.stt_ms)}</div>` : ""}</div>`
+    : `<div class="msg bot"><div class="bubble">${esc(t.text)}</div>${t.nlu ? `<div class="meta">${t.understood ? `Понял: ${esc(t.understood)} · ` : ""}${WHO[t.nlu] || esc(t.nlu)} · ${ms(t.nlu_ms)}</div>` : ""}</div>`).join("");
+  $("drawer").classList.add("open"); $("drawerBg").classList.add("open");
+}
+const closeDrawer = () => { $("drawer").classList.remove("open"); $("drawerBg").classList.remove("open"); };
+$("dClose").onclick = closeDrawer; $("drawerBg").onclick = closeDrawer;
+let openConvId = null;
+$("dDelete").onclick = async () => {
+  if (!openConvId || !confirm("Удалить разговор из журнала? Это нельзя отменить.")) return;
+  await api(`/api/conversations/${openConvId}`, undefined, "DELETE").catch(() => {});
+  closeDrawer(); refreshAnalytics().catch(() => {});
+};
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
+
+// ---------------- оформление: авто (как в системе), светлая, тёмная ----------------
+function applyTheme(mode) {
+  if (mode === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.dataset.theme = mode;
+  document.querySelectorAll("[data-theme-set]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.themeSet === mode));
+  const dark = mode === "dark" || (mode === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute("content", dark ? "#000000" : "#f2f2f7"));
+  try { localStorage.setItem("theme", mode); } catch (_) {}
+}
+document.querySelectorAll("[data-theme-set]").forEach((b) => b.onclick = (e) => { e.stopPropagation(); applyTheme(b.dataset.themeSet); });
+let savedTheme = "auto"; try { savedTheme = localStorage.getItem("theme") || "auto"; } catch (_) {}
+applyTheme(savedTheme);
+$("mStatus").onclick = (e) => { e.stopPropagation(); document.querySelector(".sidebar").classList.toggle("m-open"); };
+document.addEventListener("click", (e) => { const sb = document.querySelector(".sidebar"); if (!sb.contains(e.target)) sb.classList.remove("m-open"); });
+
+// ---------------- старт ----------------
+refreshStatus().catch(() => {});
+startCall();
+show(current());
+setInterval(() => refreshStatus().catch(() => {}), 10000);
+setInterval(() => {
+  if ($("view-desk").classList.contains("active")) refreshDesk().catch(() => {});
+  if ($("view-analytics").classList.contains("active")) refreshAnalytics().catch(() => {});
+}, 6000);
+</script>
+</body>
+</html>

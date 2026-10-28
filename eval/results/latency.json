@@ -1,0 +1,51 @@
+{
+ "commit": "3fd6381",
+ "endpoint_ms": 800,
+ "short_endpoint_ms": 450,
+ "early_ms": 250,
+ "text": {
+  "all": {
+   "n": 60,
+   "median_ms": 1.5,
+   "p95_ms": 5.5,
+   "max_ms": 19.3
+  },
+  "phrasebook": {
+   "n": 39,
+   "median_ms": 1.1,
+   "p95_ms": 2.7,
+   "max_ms": 19.3
+  },
+  "student": {
+   "n": 18,
+   "median_ms": 5.2,
+   "p95_ms": 10.1,
+   "max_ms": 10.1
+  },
+  "rules": {
+   "n": 3,
+   "median_ms": 4.9,
+   "p95_ms": 5.2,
+   "max_ms": 5.2
+  }
+ },
+ "tts_first_phrase": {
+  "engine": "Silero v5 (xenia)",
+  "n": 20,
+  "median_ms": 140.3,
+  "p95_ms": 281.4,
+  "max_ms": 281.4
+ },
+ "stt": {
+  "engine": "gigaam",
+  "n": 11,
+  "median_ms": 241.4,
+  "p95_ms": 398.7,
+  "max_ms": 398.7
+ },
+ "total_median_ms": {
+  "без раннего распознавания": 1183,
+  "обычная пауза": 942,
+  "после вопроса «да/нет»": 633
+ }
+}

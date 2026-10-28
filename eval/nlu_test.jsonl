@@ -1,0 +1,60 @@
+{"text": "мне бы талончик к хирургу", "act": "intent:book"}
+{"text": "запишите дочку к педиатру на четверг", "act": "intent:book"}
+{"text": "можно к гинекологу на той неделе", "act": "intent:book"}
+{"text": "хочу на приём, что-то спина болит", "act": "intent:book"}
+{"text": "нужно попасть к эндокринологу", "act": "intent:book"}
+{"text": "а к окулисту есть запись на утро", "act": "intent:book"}
+{"text": "я по поводу записи, не смогу в четверг, давайте другой день", "act": "intent:reschedule"}
+{"text": "перезапишите меня пожалуйста на попозже", "act": "intent:reschedule"}
+{"text": "можно сдвинуть приём на пятницу", "act": "intent:reschedule"}
+{"text": "уже не надо, отменяйте", "act": "intent:cancel"}
+{"text": "я передумала идти к врачу, снимите запись", "act": "intent:cancel"}
+{"text": "не приду к стоматологу завтра", "act": "intent:cancel"}
+{"text": "во сколько мне завтра к врачу", "act": "intent:status"}
+{"text": "а какой кабинет у меня", "act": "intent:status"}
+{"text": "на какое число у меня талон", "act": "intent:status"}
+{"text": "когда ведёт приём хирург", "act": "intent:schedule"}
+{"text": "в какие дни принимает невролог", "act": "intent:schedule"}
+{"text": "до скольки вы сегодня", "act": "faq:hours"}
+{"text": "в субботу кто-нибудь принимает", "act": "faq:hours"}
+{"text": "где вы находитесь", "act": "faq:address"}
+{"text": "как пройти в детскую поликлинику", "act": "faq:address"}
+{"text": "что с собой взять ребёнку на приём", "act": "faq:documents"}
+{"text": "сколько стоит экг", "act": "faq:price"}
+{"text": "платно к неврологу сколько выйдет", "act": "faq:price"}
+{"text": "готовы ли результаты крови", "act": "faq:lab_ready"}
+{"text": "когда будет готов анализ мочи", "act": "faq:lab_ready"}
+{"text": "как к вам прикрепиться, я переехал", "act": "faq:attach"}
+{"text": "нужна справка для бассейна", "act": "faq:certificate"}
+{"text": "как продлить больничный", "act": "faq:sick_leave"}
+{"text": "врача на дом можно вызвать", "act": "faq:home_visit"}
+{"text": "как пройти диспансеризацию", "act": "faq:checkup"}
+{"text": "где сделать прививку от гриппа", "act": "faq:vaccine"}
+{"text": "я опаздываю минут на двадцать", "act": "faq:late"}
+{"text": "вы живой человек", "act": "faq:robot"}
+{"text": "не записывайте наш разговор", "act": "faq:no_recording"}
+{"text": "сердце колет и рука немеет", "act": "flag:emergency"}
+{"text": "человек упал и не дышит", "act": "flag:emergency"}
+{"text": "у ребёнка температура под сорок второй день", "act": "flag:urgent"}
+{"text": "зуб так болит что не могу спать", "act": "flag:dental"}
+{"text": "безобразие, вы трубку не берёте", "act": "flag:complaint"}
+{"text": "врач на меня накричал", "act": "flag:complaint"}
+{"text": "что мне пить при простуде", "act": "flag:medical"}
+{"text": "подскажите чем лечить горло", "act": "flag:medical"}
+{"text": "дайте мне оператора", "act": "flag:human"}
+{"text": "с живым человеком соедините", "act": "flag:human"}
+{"text": "да, правильно", "act": "yes"}
+{"text": "ага, давайте", "act": "yes"}
+{"text": "не, не подходит", "act": "no"}
+{"text": "нет, другое время", "act": "no"}
+{"text": "ладно, до свидания", "act": "bye"}
+{"text": "всё, спасибо, больше ничего", "act": "bye"}
+{"text": "алло, здравствуйте", "act": "smalltalk"}
+{"text": "Петрова Мария Ивановна, пятое мая шестьдесят первого", "act": "identity"}
+{"text": "Козлов Андрей, 03.04.1975", "act": "identity"}
+{"text": "давайте второе время", "act": "choice"}
+{"text": "мне подойдёт последний", "act": "choice"}
+{"text": "лучше на пятницу после обеда", "act": "slots"}
+{"text": "к Беловой можно", "act": "slots"}
+{"text": "какая у вас погода", "act": "other"}
+{"text": "ммм ну это самое", "act": "other"}

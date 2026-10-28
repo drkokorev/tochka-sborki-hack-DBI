@@ -1,0 +1,22 @@
+# Облегчённый режим в Docker: веб-интерфейс, фразник, правила, LLM-шлюз (если задан ключ в .env).
+# Демо-реестр (SQLite) и журнал разговоров — в томе ./data, переживают перезапуск контейнера.
+# Голос (GigaAM, Silero) — на машине без Docker: make install-ml && make models (см. README «Запуск»).
+services:
+  assistant:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      TELEPHONY: "0"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=4)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
